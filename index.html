@@ -1,0 +1,791 @@
+ <!DOCTYPE html>
+<html lang="sk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI POWER</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+#chatbot-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 360px;
+  height: 500px;
+  background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: all 0.4s ease;
+  z-index: 9999;
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+#chatbot-container.closed {
+  max-height: 60px;
+  width: 60px;
+  border-radius: 50%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+#chatbot-container.closed #chatbot-header {
+  display: none;
+}
+
+#chatbot-container.closed #chatbot-header-closed {
+  display: block !important;
+  background: rgba(26, 26, 46, 0.9);
+  padding: 0;
+  cursor: pointer;
+  border: none;
+  backdrop-filter: blur(10px);
+  height: 60px;
+  width: 60px;
+  border-radius: 50%;
+  box-sizing: border-box;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+#chatbot-header-closed {
+  background: rgba(26, 26, 46, 0.8);
+  color: white;
+  padding: 0;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 1em;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+#chatbot-header {
+  background: rgba(26, 26, 46, 0.8);
+  color: white;
+  padding: 16px 20px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 1em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+#toggle-icon {
+  font-size: 1.5em;
+  transition: transform 0.3s ease;
+}
+
+#chatbot-container:not(.closed) #toggle-icon {
+  transform: rotate(45deg);
+}
+
+#chatbot-container.closed #chatbot-body {
+  display: none;
+}
+
+#chatbot-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  background: #0f0f23;
+  height: calc(100% - 80px);
+  box-sizing: border-box;
+}
+
+#chat-messages {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 0;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+#chat-messages::-webkit-scrollbar {
+  display: none; /* WebKit */
+}
+
+.message {
+  padding: 12px 16px;
+  border-radius: 18px;
+  max-width: 85%;
+  font-size: 0.9em;
+  line-height: 1.4;
+  position: relative;
+  margin: 4px 0;
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.message.user {
+  align-self: flex-end;
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  color: #ffffff;
+  position: relative;
+  z-index: 100;
+  border-radius: 18px 18px 4px 18px;
+  box-shadow: 0 2px 12px rgba(79, 70, 229, 0.3);
+}
+
+.message.bot {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.08);
+  color: #e2e8f0;
+  position: relative;
+  z-index: 100;
+  border-radius: 18px 18px 18px 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#input-area {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  margin-top: 0;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+#user-input {
+  flex: 1;
+  resize: none;
+  height: 44px;
+  padding: 12px 16px;
+  font-size: 14px;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  outline: none;
+  transition: all 0.3s ease;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+#user-input::-webkit-scrollbar {
+  display: none; /* WebKit */
+}
+
+#user-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+#user-input:focus {
+  border-color: #4f46e5;
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+}
+
+button {
+  background: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  padding: 0;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  height: 44px;
+  width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+button:hover {
+  background: #3730a3;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+}
+
+button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+}
+
+/* Responzívne štýly pre mobilné zariadenia */
+@media (max-width: 768px) {
+  #chatbot-container {
+    bottom: 10px;
+    right: 10px;
+    left: 10px;
+    width: auto;
+    max-width: calc(100vw - 20px);
+    height: auto;
+    max-height: 70vh;
+  }
+  
+  #chatbot-container.closed {
+    width: 60px;
+    height: 60px;
+    left: auto;
+    right: 10px;
+  }
+  
+  #chatbot-header {
+    padding: 8px 16px;
+    font-size: 0.95em;
+  }
+  
+  #chatbot-body {
+    padding: 12px;
+    height: calc(70vh - 80px);
+  }
+  
+  #user-input {
+    height: 50px;
+    font-size: 16px; /* Zabráni zoomovaniu na iOS */
+  }
+  
+  .message {
+    max-width: 85%;
+    font-size: 0.9em;
+  }
+}
+
+@media (max-width: 480px) {
+  #chatbot-container {
+    bottom: 5px;
+    right: 5px;
+    left: 5px;
+    max-width: calc(100vw - 10px);
+    height: auto;
+    max-height: 75vh;
+  }
+  
+  #chatbot-container.closed {
+    width: 60px;
+    height: 60px;
+    right: 5px;
+  }
+  
+  #chatbot-header {
+    padding: 6px 12px;
+    font-size: 0.9em;
+  }
+  
+  #chatbot-header img {
+    height: 32px !important;
+  }
+  
+  #chatbot-body {
+    padding: 10px;
+    height: calc(75vh - 75px);
+  }
+  
+  #user-input {
+    height: 45px;
+    padding: 8px 10px;
+    font-size: 16px;
+  }
+  
+  button {
+    padding: 10px;
+    font-size: 0.9em;
+  }
+  
+  .message {
+    padding: 8px 12px;
+    max-width: 90%;
+    font-size: 0.85em;
+  }
+  
+  #toggle-icon {
+    font-size: 1.3em;
+  }
+}
+
+/* Landscape orientácia na mobiloch */
+@media (max-width: 768px) and (orientation: landscape) {
+  #chatbot-container {
+    height: auto;
+    max-height: 85vh;
+  }
+  
+  #chatbot-body {
+    height: calc(85vh - 80px);
+  }
+}
+
+/* Veľmi malé zariadenia */
+@media (max-width: 320px) {
+  #chatbot-container.closed {
+    width: 60px;
+    height: 60px;
+  }
+  
+  #chatbot-header {
+    font-size: 0.85em;
+  }
+  
+  #chatbot-header img {
+    height: 28px !important;
+  }
+}
+  </style>
+</head>
+<body>
+  <div id="chatbot-container" class="closed">
+    <div id="chatbot-header" onclick="toggleChatbot()">
+      <!-- Kompletný režim (otvorený) -->
+      <div class="user-info" style="display: flex; align-items: center; gap: 12px;">
+        <div style="position: relative;">
+          <img src="logo_aiPower-03-03.png" alt="AI Asistent" style="height:40px; width:40px; border-radius:50%; object-fit:cover;">
+          <div style="position: absolute; bottom: 2px; right: 2px; width: 12px; height: 12px; background: #10b981; border-radius: 50%; border: 2px solid #1a1a2e;"></div>
+        </div>
+        <div>
+          <div style="font-weight: 600; font-size: 16px; color: #ffffff; margin-bottom: 2px;">AI Asistent</div>
+          <div style="font-size: 12px; color: #10b981; font-weight: 500;">Online</div>
+        </div>
+      </div>
+      
+      <span id="toggle-icon" style="font-size: 20px; font-weight: 300;">+</span>
+    </div>
+
+    <!-- Header pre zatvorený stav -->
+    <div id="chatbot-header-closed" onclick="toggleChatbot()" style="display: none;">
+      <img src="logo_aiPower-03-03.png" alt="AI Asistent" style="height:40px; width:40px; border-radius:50%; object-fit:cover;">
+    </div>
+
+    <div id="chatbot-body">
+      <div id="chat-messages">
+        <div class="message bot">Dobrý deň! Ako vám môžem pomôcť? 👋</div>
+      </div>
+      <div id="input-area">
+        <textarea id="user-input" placeholder="Napíšte správu..."></textarea>
+        <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  
+<script src="database.js"></script>
+
+  <script>
+    let chatHistory = [
+      {
+        role: "system",
+        content: "Si skúsený a empatický AI asistent firmy AIPower. FIRMA AIPOWER POSKYTUJE LEN JEDNU SLUŽBU: Tvorbu AI chatbotov na mieru pre rôzne firmy a odvetvia. Ak používateľ položí otázku týkajúcu sa našej služby tvorby AI chatbotov, odpovedaj stručne a profesionálne podľa dopytu. Ak používateľ položí otázku o službe, ktorú neposkytujeme, odpovedz: Prepáčte, ale túto službu neposkytujeme. Špecializujeme sa výhradne na tvorbu AI chatbotov na mieru. Radi vám však pomôžeme s požiadavkami týkajúcimi sa AI chatbotov. Na všetky ostatné otázky, napríklad o pobočkách, dostupnosti, pozdravy alebo všeobecné témy odpovedaj neutrálne a priateľsky, nikdy nehovor, že si AI, odpovedaj vždy jednou alebo dvoma vetami."
+
+
+      }
+    ];
+
+    const chatbox = document.getElementById("chat-messages");
+    const inputField = document.getElementById("user-input");
+
+    // Event listener pre Enter a Shift+Enter
+    inputField.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault(); // Zabráni štandardnému správaniu (nový riadok)
+        sendMessage(); // Odošle správu
+      }
+      // Shift+Enter vytvorí nový riadok (štandardné správanie textarea)
+    });
+
+    function toggleChatbot() {
+      const container = document.getElementById("chatbot-container");
+      const openHeader = document.getElementById("chatbot-header");
+      const closedHeader = document.getElementById("chatbot-header-closed");
+      const icon = document.getElementById("toggle-icon");
+      
+      container.classList.toggle("closed");
+      
+      if (container.classList.contains("closed")) {
+        // Zatvorený stav
+        openHeader.style.display = "none";
+        closedHeader.style.display = "block";
+      } else {
+        // Otvorený stav
+        openHeader.style.display = "flex";
+        closedHeader.style.display = "none";
+        icon.innerText = "−";
+      }
+    }
+
+    function delay(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+   
+
+async function sendMessage() {
+  const message = inputField.value.trim();
+  if (!message) return;
+
+  appendMessage("Ty", message, "user");
+  inputField.value = "";
+
+
+
+  chatHistory.push({ role: "user", content: message });
+
+const lowerMessage = message.toLowerCase();
+let localReply = null;
+
+
+  
+// --- LOKÁLNE ODPOVEDE Z database.js (maximálne pokrytie variantov) ---
+
+
+if (
+  lowerMessage.includes("cena") ||
+  lowerMessage.includes("koľko stojí") ||
+  lowerMessage.includes("kolko stoji") ||
+  lowerMessage.includes("koľko stoji") ||
+  lowerMessage.includes("kolko stojí") ||
+  lowerMessage.includes("aká je cena") ||
+  lowerMessage.includes("cenník") ||
+  lowerMessage.includes("cennik") ||
+  lowerMessage.includes("ceny") ||
+  lowerMessage.includes("sluzba") ||
+  lowerMessage.includes("sluzby") ||
+  lowerMessage.includes("ponuka sluzieb")
+) {
+  const sluzby = window.grandenData.sluzby
+    .map(s => `• ${s.nazov}: ${s.cena}`)
+    .join("\n");
+  localReply = `Naše služby a ich ceny:\n${sluzby}`.replace(/\n/g, "<br>");
+
+
+
+} else if (
+  lowerMessage.includes("kontakt") ||
+  lowerMessage.includes("telefón") ||
+  lowerMessage.includes("telefon") ||
+  lowerMessage.includes("tvoje číslo") ||
+  lowerMessage.includes("tvoj kontakt") ||
+  lowerMessage.includes("email") ||
+  lowerMessage.includes("e-mail") ||
+  lowerMessage.includes("mail") ||
+  lowerMessage.includes("gmail") ||
+  lowerMessage.includes("číselko")
+) {
+  const k = window.grandenData.kontakty;
+  localReply = `Kontakt na nás:\n📞 ${k.telefon}\n📧 ${k.email}\n🌐 ${k.web}`;
+
+} else if (
+  lowerMessage.includes("adresa") ||
+  lowerMessage.includes("kde ste") ||
+  lowerMessage.includes("sídli") ||
+  lowerMessage.includes("sidli") ||
+  lowerMessage.includes("kde sa nachádza") ||
+  lowerMessage.includes("kde vas najdem") ||
+  lowerMessage.includes("kde vas nájdem") ||
+  lowerMessage.includes("kde sa nachadza") ||
+  lowerMessage.includes("lokácia") ||
+  lowerMessage.includes("mapa")
+) {
+  localReply = `Naša hlavná adresa je:\n${window.grandenData.sidlo}`;
+
+} else if (
+  lowerMessage.includes("založená") ||
+  lowerMessage.includes("zalozena") ||
+  lowerMessage.includes("kedy vznikla") ||
+  lowerMessage.includes("rok vzniku") ||
+  lowerMessage.includes("história firmy") ||
+  lowerMessage.includes("historia firmy")
+) {
+  localReply = `Firma Granden bola založená v roku ${window.grandenData.zalozena}.`;
+
+} else if (
+  lowerMessage.includes("konatel") ||
+  lowerMessage.includes("konateľ") ||
+  lowerMessage.includes("konatelia") ||
+  lowerMessage.includes("zakladateľ") ||
+  lowerMessage.includes("zakladatel") ||
+  lowerMessage.includes("kto založil") ||
+  lowerMessage.includes("kto zalozil") ||
+  lowerMessage.includes("kto ju zalozil") ||
+  lowerMessage.includes("founder")
+) {
+  localReply = `Zakladatelia: ${window.grandenData.zakladatelia.join(", ")}.`;
+
+} else if (
+  lowerMessage.includes("výkonny riaditel") ||
+  lowerMessage.includes("výkonny riaditeľ") ||
+  lowerMessage.includes("vykonny riaditel") ||
+  lowerMessage.includes("riaditel")
+) {
+  localReply = `Výkonný riaďiteľ ${window.grandenData.vykonnyriaditel.join(", ")}.`;  
+
+} else if (
+  lowerMessage.includes("pobočka") ||
+  lowerMessage.includes("pobocka") ||
+  lowerMessage.includes("najbližšia pobočka") ||
+  lowerMessage.includes("najblizsia pobocka") ||
+  lowerMessage.includes("predajna") ||
+  lowerMessage.includes("pobočky")
+) {
+  const p = window.grandenData.pobočky
+    .map(x => `• ${x.mesto}: ${x.adresa}`)
+    .join("\n");
+  localReply = `Naše pobočky:\n${p}`;
+
+} else if (
+  lowerMessage.includes("pracovné hodiny") ||
+  lowerMessage.includes("pracovne hodiny") ||
+  lowerMessage.includes("otvorené") ||
+  lowerMessage.includes("otvorene") ||
+  lowerMessage.includes("kedy môžem prísť") ||
+  lowerMessage.includes("kedy mozem prist") ||
+  lowerMessage.includes("otváracie hodiny") ||
+  lowerMessage.includes("otvaracie hodiny") ||
+  lowerMessage.includes("kedy mate otvorene") ||
+  lowerMessage.includes("kedy máte otvorené")
+) {
+  const h = window.grandenData.pracovne_hodiny;
+ localReply = ("Pracovné hodiny:\n" +
+  Object.entries(h)
+    .map(([den, cas]) => `${den.charAt(0).toUpperCase()+den.slice(1)}: ${cas}`)
+    .join("\n"))
+  .replace(/\n/g, "<br>");
+
+} else if (
+  lowerMessage.includes("partner") ||
+  lowerMessage.includes("spolupráca") ||
+  lowerMessage.includes("spolupraca") ||
+  lowerMessage.includes("partneri") ||
+  lowerMessage.includes("s kým spolupracujete")
+) {
+  localReply = (`Naši partneri:\n• ${window.grandenData.partnerstvá.join("\n• ")}`)
+    .replace(/\n/g, "<br>");
+
+} else if (
+  lowerMessage.includes("popis") ||
+  lowerMessage.includes("čo robí") ||
+  lowerMessage.includes("co robi") ||
+  lowerMessage.includes("zaoberá") ||
+  lowerMessage.includes("zaobera") ||
+  lowerMessage.includes("funkcia") ||
+  lowerMessage.includes("profil firmy")
+) {
+  localReply = window.grandenData.popis;
+
+} else if (
+  lowerMessage.includes("filozofia") ||
+  lowerMessage.includes("vízia") ||
+  lowerMessage.includes("vizia") ||
+  lowerMessage.includes("hodnoty") ||
+  lowerMessage.includes("poslanie")
+) {
+  localReply = window.grandenData.filozofia;
+
+} else if (
+  lowerMessage.includes("udržateľnosť") ||
+  lowerMessage.includes("udrzatelnost") ||
+  lowerMessage.includes("ekologické") ||
+  lowerMessage.includes("ekologicke") ||
+  lowerMessage.includes("zelené") ||
+  lowerMessage.includes("zelene") ||
+  lowerMessage.includes("CSR")
+) {
+  const u = window.grandenData.udrzatelnost || window.grandenData["udržateľnosť"];
+  localReply = (`Opatrenia udržateľnosti:\n• ${u.opatrenia.join("\n• ")}`)
+    .replace(/\n/g, "<br>");
+  
+
+
+} else if (
+  lowerMessage.includes("počet zamestnancov") ||
+  lowerMessage.includes("pocet zamestnancov") ||
+  lowerMessage.includes("kolko zamestnancov") ||
+  lowerMessage.includes("koľko vás je") ||
+  lowerMessage.includes("kolko vas je") ||
+  lowerMessage.includes("kolko vás je") ||
+  lowerMessage.includes("koľko zamestnancov") ||
+  lowerMessage.includes("kolko zamestnancov") ||
+  lowerMessage.includes("kolko mate zamestnancov") ||
+  lowerMessage.includes("koľko mate zamestnancov")
+) {
+  localReply = `Momentálne máme ${window.grandenData.pocet_zamestnancov} zamestnancov.`;
+
+} else if (
+  lowerMessage.includes("stretnutie") ||
+  lowerMessage.includes("meeting") ||
+  lowerMessage.includes("rezervacia") ||
+  lowerMessage.includes("rezervácia") ||
+  lowerMessage.includes("calendly") ||
+  lowerMessage.includes("zavolat si") ||
+  lowerMessage.includes("book") ||
+  lowerMessage.includes("objednat") ||
+  lowerMessage.includes("termin") ||
+  lowerMessage.includes("termín") ||
+  lowerMessage.includes("zarezervovat") ||
+  lowerMessage.includes("booknut") ||
+  lowerMessage.includes("zavolat") ||
+  lowerMessage.includes("zavolať") ||
+  lowerMessage.includes("objednať")
+) {
+  const link = window.grandenData.booking.calendly;
+  localReply = `Tu si môžeš rezervovať stretnutie: <a href="${link}" target="_blank">Rezervovať cez Calendly</a>`;
+  
+} else if (
+  lowerMessage.includes("r&d") ||
+  lowerMessage.includes("výskum") ||
+  lowerMessage.includes("vyskum") ||
+  lowerMessage.includes("vývoj") ||
+   lowerMessage.includes("vyvoj") ||
+  lowerMessage.includes("r and d")
+) {
+  localReply = window.grandenData.r_and_d
+    ? "Áno, máme interné oddelenie výskumu a vývoja."
+    : "Nie, zameriavame sa na sprostredkovateľskú činnosť, nemáme samostatné R&D.";
+
+} 
+  
+if (localReply) {
+  removeLastBotMessage();
+  appendMessage("AI POWER", localReply, "bot");
+  chatHistory.push({ role: "assistant", content: localReply });
+  return;
+}
+// --- koniec lokálnych odpovedí ---
+
+
+
+
+
+
+  
+  appendMessage("AI POWER", "Píšem odpoveď...", "bot", true);
+
+  try {
+    await delay(800);
+
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ messages: chatHistory })
+    });
+
+    if (!response.ok) {
+     throw new Error(`Chyba ${response.status}: ${response.statusText}`);
+
+    }
+
+    const data = await response.json();
+    const reply = data.choices?.[0]?.message?.content?.trim() || "Prepáč, neviem na to odpovedať.";
+
+    removeLastBotMessage();
+    appendMessage("AI POWER", reply, "bot");
+    chatHistory.push({ role: "assistant", content: reply });
+
+   
+
+  } catch (error) {
+    console.error("Chyba:", error);
+    removeLastBotMessage();
+    appendMessage("AI POWER", `Ups, nastala chyba: ${error.message}`, "bot");
+
+  }
+}
+
+
+
+
+
+
+    function appendMessage(sender, message, role, isTemp = false) {
+      const msgDiv = document.createElement("div");
+      msgDiv.classList.add("message", role);
+      if (isTemp) msgDiv.classList.add("temp");
+
+      // Tu sa spracuje **text** na <strong>text</strong>
+      const formattedMessage = message.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+      msgDiv.innerHTML = formattedMessage;
+
+      chatbox.appendChild(msgDiv);
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+
+    function removeLastBotMessage() {
+      const tempMsg = chatbox.querySelector(".bot.temp");
+      if (tempMsg) chatbox.removeChild(tempMsg);
+    }
+
+
+
+
+
+
+
+    
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
