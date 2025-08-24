@@ -1,48 +1,33 @@
 // database.js
-// Kompletná databáza informácií o spoločnosti GRANDEN s.r.o.
+// Kompletná databáza informácií o spoločnosti AI Power
 
-window.grandenData = {
-  meno: "GRANDEN s.r.o.",
-  zalozena: 2003,
-  zakladatelia: ["Eva Gránska", "Jozef Kollár"],
-  vykonnyriaditel: ["Ing. Miloš Lehocký"],
-  sidlo: "Račianska 123, Bratislava, Slovensko",
+window.aiPowerData = {
+  meno: "AI Power",
+  zalozena: 2025,
+  zakladatelia: ["Marcel Lehocky"],
+  vykonnyriaditel: ["Neuvedené"],
+  sidlo: "Bratislava, Slovensko",
   pobočky: [
-    { mesto: "Bratislava", adresa: "Račianska 123" },
-    { mesto: "Praha", adresa: "Vinohradská 45" },
-    { mesto: "Nitra", adresa: "Mostná 60" }
+    { mesto: "Bratislava", adresa: "Slovensko" }
   ],
-  segmenty: ["Neživotné poistenie", "Firemné riziká", "Privátne poistenie"],
-  popis: "Nezávislý poisťovací maklér pôsobiaci na trhu SR a ČR, špecializovaný na audit zmlúv, monitoring poistného trhu a likvidáciu poistných udalostí.",
+  segmenty: ["AI Chatboty", "Automatizácia", "Digitálni asistenti"],
+  popis: "Slovenská agentúra špecializovaná na tvorbu AI chatbotov na mieru. Vytvára inteligentných asistentov, ktorí hovoria vaším jazykom a poznajú vaše podnikanie.",
   sluzby: [
     {
-      nazov: "Audit poistných zmlúv",
-      cena: "Zadarmo pri aktívnej spolupráci",
-      popis: "Komplexná kontrola existujúcich poistných zmlúv pre optimalizáciu krytia a zníženie nákladov."
+      nazov: "AI Chatbot na mieru",
+      cena: "€300 jednorazovo + €50 / mesiac",
+      popis: "Základná verzia AI chatbota pre váš web: odpovede na najčastejšie otázky, 24/7 dostupnosť, zber kontaktov, údržba a drobné úpravy."
     },
     {
-      nazov: "Monitoring poistného trhu",
-      cena: "v cene servisu",
-      popis: "Priebežné sledovanie nových poistných produktov a cien od rôznych poisťovní."
-    },
-    {
-      nazov: "24/7 asistencia osobného makléra",
-      cena: "Individuálne – podľa rozsahu zmluvy",
-      popis: "Okamžitá telefonická aj online podpora pre klientov 24 hodín denne."
-    },
-    {
-      nazov: "Likvidácia poistných udalostí",
-      cena: "Zahŕňa sa v správe zmlúv",
-      popis: "Kompletná asistencia pri nahlasovaní a vybavovaní poistných udalostí až po finálne vyplatenie."
+      nazov: "Voliteľné prémiové funkcie",
+      cena: "Jednorazovo €50 / funkcia",
+      popis: "Možnosti rozšírenia: vyhľadávanie vo vašej databáze, pokročilé integrácie (Google Sheets, CRM, rezervačný systém), multijazyčný režim, ďalšie funkcie podľa potrieb."
     }
   ],
   kontakty: {
-    web: "https://www.granden.sk",
-    email: "info@granden.sk",
-    telefon: "+421 2 4363 1234",
-    facebook: "https://www.facebook.com/granden",
-    linkedin: "https://www.linkedin.com/company/granden"
-  
+    web: "https://www.aipower.site",
+    email: "info@aipower.site",
+    telefon: "+421 904 603 171"
   },
   pracovne_hodiny: {
     pondelok: "8:00–17:00",
@@ -53,24 +38,18 @@ window.grandenData = {
     sobota: "zatvorené",
     nedela: "zatvorené"
   },
-
-   booking: {
-    calendly: "https://calendly.com/aipoweragency/new-meeting",
-   
+  booking: {
+    calendly: "https://calendly.com/aipoweragency/new-meeting?month=2025-08"
   },
-  
-  partnerstvá: [
-    "Slovenský olympijský športový výbor",
-    "Mestská športová akadémia Bratislava"
-  ],
-  filozofia: "Klient na prvom mieste – osobný prístup, transparentnosť a dlhodobá spolupráca.",
+  partnerstvá: [],
+  filozofia: "Ušetriť firmám čas a peniaze prostredníctvom inteligentných chatbotov a zlepšiť spokojnosť zákazníkov.",
   udržateľnosť: {
     opatrenia: [
-      "Zníženie papierovej dokumentácie procesmi digitalizácie",
-      "Ekologická kancelárska prevádzka (recyklácia, LED osvetlenie)"
+      "Digitálne procesy – minimalizácia papierovej administratívy",
+      "Cloudové riešenia s nízkou spotrebou energie"
     ]
   },
   GDPR: true,
-  pocet_zamestnancov: 15,
-  r_and_d: false
+  pocet_zamestnancov: "Neuvedené",
+  r_and_d: true
 };
