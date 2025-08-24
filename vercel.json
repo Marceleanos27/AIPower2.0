@@ -3,7 +3,7 @@
     {
       "src": "/index.html",
       "headers": {
-        "Content-Security-Policy": "frame-ancestors 'self' https://mojadomena.sk https://www.mojadomena.sk https://aipower.site/"
+        "Content-Security-Policy": "frame-ancestors 'self' https://mojadomena.sk https://www.mojadomena.sk https://klient.sk https://aipower.site http://localhost https://localhost:3000"
       }
     },
     {
@@ -12,4 +12,3 @@
     }
   ]
 }
-
