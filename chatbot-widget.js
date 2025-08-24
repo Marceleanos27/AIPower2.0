@@ -3,7 +3,7 @@
   window.marcelChatbotLoaded = true;
 
   const iframe = document.createElement("iframe");
-  iframe.src = "https://aipoweragency.vercel.app/"; // ⬅️ Change to your real URL (e.g. Vercel)
+  iframe.src = "https://ai-power2-0.vercel.app/"; // ⬅️ Change to your real URL (e.g. Vercel)
   iframe.style.position = "fixed";
   iframe.style.bottom = "20px";
   iframe.style.right = "20px";
@@ -15,3 +15,4 @@
   iframe.style.boxShadow = "0 10px 25px rgba(0,0,0,0.0)";
   document.body.appendChild(iframe);
 })();
+
