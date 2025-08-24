@@ -1,16 +1,14 @@
 {
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ],
-  "headers": [
+  "routes": [
     {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "Content-Security-Policy",
-          "value": "frame-ancestors 'self' https://mojadomena.sk https://www.mojadomena.sk https://klient.sk"
-        }
-      ]
+      "src": "/index.html",
+      "headers": {
+        "Content-Security-Policy": "frame-ancestors 'self' https://mojadomena.sk https://www.mojadomena.sk https://klient.sk"
+      }
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
