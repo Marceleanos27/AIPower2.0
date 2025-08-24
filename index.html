@@ -402,6 +402,11 @@ button:active {
     const chatbox = document.getElementById("chat-messages");
     const inputField = document.getElementById("user-input");
 
+    // Informuj parent, že je chatbot na začiatku zatvorený
+    if (window.parent !== window) {
+      window.parent.postMessage({ type: "chatbot-closed" }, "*");
+    }
+
     // Event listener pre Enter a Shift+Enter
     inputField.addEventListener('keydown', function(e) {
       if (e.key === 'Enter' && !e.shiftKey) {
@@ -423,11 +428,19 @@ button:active {
         // Zatvorený stav
         openHeader.style.display = "none";
         closedHeader.style.display = "block";
+        // Informuj parent o zatvorení
+        if (window.parent !== window) {
+          window.parent.postMessage({ type: "chatbot-closed" }, "*");
+        }
       } else {
         // Otvorený stav
         openHeader.style.display = "flex";
         closedHeader.style.display = "none";
         icon.innerText = "−";
+        // Informuj parent o otvorení
+        if (window.parent !== window) {
+          window.parent.postMessage({ type: "chatbot-opened" }, "*");
+        }
       }
     }
 
