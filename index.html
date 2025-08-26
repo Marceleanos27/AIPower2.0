@@ -532,14 +532,139 @@ async function sendMessage() {
   appendMessage("Ty", message, "user");
   inputField.value = "";
 
-
-
   chatHistory.push({ role: "user", content: message });
 
-const lowerMessage = message.toLowerCase();
-let localReply = null;
+  // Normalizácia textu - odstránenie diakritiky a lowercase
+  const normalizedMessage = message
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, ''); // odstráni diakritiku
 
+  // Optimalizované quick replies s RegEx
+  const quickReplies = {
+    pricing: {
+      regex: /(cena|ko[l]?ko\s+stoj[ií]|cenn[ií]k|ceny|sluzb[ya]?|ponuka\s+sluzieb)/i,
+      handler: () => {
+        const sluzby = window.aiPowerData.sluzby
+          .map(s => `• ${s.nazov}: ${s.cena}`)
+          .join("\n");
+        return `Naše služby a ich ceny:\n${sluzby}`.replace(/\n/g, "<br>");
+      }
+    },
+    
+    contact: {
+      regex: /(kontakt|telefon|tvoj[ea]?\s+(cislo|kontakt)|e?-?mail|gmail|ciselko)/i,
+      handler: () => {
+        const k = window.aiPowerData.kontakty;
+        return `Kontakt na nás:\n📞 ${k.telefon}\n📧 ${k.email}\n🌐 ${k.web}`;
+      }
+    },
+    
+    address: {
+      regex: /(adresa|kde\s+(ste|sa\s+(nachadza|nachadzate))|sidli|lokacia|mapa|kde\s+vas\s+(najdem|najdeme))/i,
+      handler: () => `Naša hlavná adresa je:\n${window.aiPowerData.sidlo}`
+    },
+    
+    history: {
+      regex: /(zalozena?|kedy\s+vznikla|rok\s+vzniku|historia\s+firmy)/i,
+      handler: () => `Firma AI Power bola založená v roku ${window.aiPowerData.zalozena}.`
+    },
+    
+    management: {
+      regex: /(konatel|zakladatel|kto\s+(zalozil|ju\s+zalozil)|founder|riaditel)/i,
+      handler: () => {
+        if (normalizedMessage.includes('riaditel')) {
+          return `Výkonný riaditeľ: ${window.aiPowerData.vykonnyriaditel.join(", ")}.`;
+        }
+        return `Zakladateľ: ${window.aiPowerData.zakladatelia.join(", ")}.`;
+      }
+    },
+    
+    branches: {
+      regex: /(pobocka|najblizsia\s+pobocka|predajna)/i,
+      handler: () => {
+        const p = window.aiPowerData.pobočky
+          .map(x => `• ${x.mesto}: ${x.adresa}`)
+          .join("\n");
+        return `Naše pobočky:\n${p}`;
+      }
+    },
+    
+    hours: {
+      regex: /(pracovne\s+hodiny|otvorene|kedy\s+(mozem\s+prist|mate\s+otvorene)|otvaracie\s+hodiny)/i,
+      handler: () => {
+        const h = window.aiPowerData.pracovne_hodiny;
+        return ("Pracovné hodiny:\n" +
+          Object.entries(h)
+            .map(([den, cas]) => `${den.charAt(0).toUpperCase()+den.slice(1)}: ${cas}`)
+            .join("\n"))
+          .replace(/\n/g, "<br>");
+      }
+    },
+    
+    partners: {
+      regex: /(partner|spolupraca|s\s+kym\s+spolupracujete)/i,
+      handler: () => {
+        return window.aiPowerData.partnerstvá.length
+          ? (`Naši partneri:\n• ${window.aiPowerData.partnerstvá.join("\n• ")}`).replace(/\n/g, "<br>")
+          : "Momentálne nemáme oficiálne partnerstvá.";
+      }
+    },
+    
+    description: {
+      regex: /(popis|co\s+robi|zaobera|funkcia|profil\s+firmy)/i,
+      handler: () => window.aiPowerData.popis
+    },
+    
+    philosophy: {
+      regex: /(filozofia|vizia|hodnoty|poslanie)/i,
+      handler: () => window.aiPowerData.filozofia
+    },
+    
+    sustainability: {
+      regex: /(udrzatelnost|ekologicke|zelene|csr)/i,
+      handler: () => {
+        const u = window.aiPowerData.udržateľnosť || window.aiPowerData.udrzatelnost;
+        return (`Opatrenia udržateľnosti:\n• ${u.opatrenia.join("\n• ")}`).replace(/\n/g, "<br>");
+      }
+    },
+    
+    employees: {
+      regex: /(pocet\s+zamestnancov|ko[l]?ko\s+(vas\s+je|zamestnancov|mate\s+zamestnancov))/i,
+      handler: () => `Momentálne máme ${window.aiPowerData.pocet_zamestnancov} zamestnancov.`
+    },
+    
+    booking: {
+      regex: /(stretnutie|meeting|rezervacia|calendly|zavolat\s+si|book|objednat|termin|zarezervovat)/i,
+      handler: () => {
+        const link = window.aiPowerData.booking.calendly;
+        return `Tu si môžeš rezervovať stretnutie: <a href="${link}" target="_blank">Rezervovať cez Calendly</a>`;
+      }
+    },
+    
+    research: {
+      regex: /(r&d|vyskum|vyvoj|r\s+and\s+d)/i,
+      handler: () => {
+        return window.aiPowerData.r_and_d
+          ? "Áno, venujeme sa aj výskumu a vývoju AI riešení."
+          : "Nie, momentálne nemáme vlastné R&D oddelenie.";
+      }
+    }
+  };
 
+  // Testovanie quick replies
+  let localReply = null;
+  for (const [category, config] of Object.entries(quickReplies)) {
+    if (config.regex.test(normalizedMessage)) {
+      localReply = config.handler();
+      
+      // Analytics tracking (ak implementované)
+      if (typeof trackQuickReply === 'function') {
+        trackQuickReply(category, message);
+      }
+      break;
+    }
+  }
   
 // --- LOKÁLNE ODPOVEDE Z database.js (maximálne pokrytie variantov) ---
 
