@@ -12,6 +12,16 @@ body {
   margin: 0;
   padding: 0;
   font-family: 'Poppins', sans-serif;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden; /* Zabráni scrollbaru v iframe */
+}
+
+html {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 #chatbot-container {
@@ -33,11 +43,31 @@ body {
   font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
+/* Keď je v iframe, vyplní celý priestor */
+body.iframe-mode #chatbot-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: inherit; /* Prevezme border-radius z iframe */
+}
+
 #chatbot-container.closed {
   max-height: 60px;
   width: 60px;
   border-radius: 50%;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* V iframe režime - zatvorený stav vyplní celý kruhový iframe */
+body.iframe-mode #chatbot-container.closed {
+  width: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  border-radius: 50% !important;
 }
 
 #chatbot-container.closed #chatbot-header {
@@ -247,6 +277,22 @@ button:active {
     right: 10px;
   }
   
+  /* V iframe režime */
+  body.iframe-mode #chatbot-container {
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    top: 0 !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+  }
+  
+  body.iframe-mode #chatbot-container.closed {
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 50% !important;
+  }
+  
   #chatbot-header {
     padding: 8px 16px;
     font-size: 0.95em;
@@ -255,6 +301,10 @@ button:active {
   #chatbot-body {
     padding: 12px;
     height: calc(70vh - 80px);
+  }
+  
+  body.iframe-mode #chatbot-body {
+    height: calc(100% - 80px);
   }
   
   #user-input {
@@ -284,6 +334,22 @@ button:active {
     right: 5px;
   }
   
+  /* V iframe režime */
+  body.iframe-mode #chatbot-container {
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    top: 0 !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+  }
+  
+  body.iframe-mode #chatbot-container.closed {
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 50% !important;
+  }
+  
   #chatbot-header {
     padding: 6px 12px;
     font-size: 0.9em;
@@ -296,6 +362,10 @@ button:active {
   #chatbot-body {
     padding: 10px;
     height: calc(75vh - 75px);
+  }
+  
+  body.iframe-mode #chatbot-body {
+    height: calc(100% - 75px);
   }
   
   #user-input {
@@ -401,6 +471,11 @@ button:active {
 
     const chatbox = document.getElementById("chat-messages");
     const inputField = document.getElementById("user-input");
+
+    // Detekcia iframe a pridanie triedy
+    if (window.self !== window.top) {
+      document.body.classList.add('iframe-mode');
+    }
 
     // Informuj parent, že je chatbot na začiatku zatvorený
     if (window.parent !== window) {

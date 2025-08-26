@@ -34,7 +34,7 @@
       // Veľmi malé zariadenia
       return {
         openWidth: `${vw - 10}px`,
-        openHeight: `${Math.min(vh * 0.75, 500)}px`,
+        openHeight: `${Math.min(vh * 0.75, 600)}px`,
         closedWidth: "60px",
         closedHeight: "60px",
         bottom: "5px",
@@ -45,7 +45,7 @@
       // Mobilné zariadenia
       return {
         openWidth: `${vw - 20}px`,
-        openHeight: `${Math.min(vh * 0.7, 550)}px`,
+        openHeight: `${Math.min(vh * 0.7, 580)}px`,
         closedWidth: "60px", 
         closedHeight: "60px",
         bottom: "10px",
@@ -53,10 +53,10 @@
         left: "10px"
       };
     } else {
-      // Desktop
+      // Desktop - presné rozmery ako má chatbot
       return {
-        openWidth: "400px",
-        openHeight: "550px",
+        openWidth: "360px",
+        openHeight: "500px",
         closedWidth: "60px",
         closedHeight: "60px", 
         bottom: "20px",
