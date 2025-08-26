@@ -532,235 +532,147 @@ async function sendMessage() {
   appendMessage("Ty", message, "user");
   inputField.value = "";
 
-
-
   chatHistory.push({ role: "user", content: message });
 
-const lowerMessage = message.toLowerCase();
-let localReply = null;
+  // Normalizácia textu - odstránenie diakritiky a lowercase
+  const normalizedMessage = message
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, ''); // odstráni diakritiku
 
+  // Optimalizované quick replies s RegEx
+  const quickReplies = {
+    pricing: {
+      regex: /(cena|ko[l]?ko\s+stoj[ií]|cenn[ií]k|ceny|sluzb[ya]?|ponuka\s+sluzieb)/i,
+      handler: () => {
+        const sluzby = window.aiPowerData.sluzby
+          .map(s => `• ${s.nazov}: ${s.cena}`)
+          .join("\n");
+        return `Naše služby a ich ceny:\n${sluzby}`.replace(/\n/g, "<br>");
+      }
+    },
+    
+    contact: {
+      regex: /(kontakt|telefon|tvoj[ea]?\s+(cislo|kontakt)|e?-?mail|gmail|ciselko)/i,
+      handler: () => {
+        const k = window.aiPowerData.kontakty;
+        return `Kontakt na nás:\n📞 ${k.telefon}\n📧 ${k.email}\n🌐 ${k.web}`;
+      }
+    },
+    
+    address: {
+      regex: /(adresa|kde\s+(ste|sa\s+(nachadza|nachadzate))|sidli|lokacia|mapa|kde\s+vas\s+(najdem|najdeme))/i,
+      handler: () => `Naša hlavná adresa je:\n${window.aiPowerData.sidlo}`
+    },
+    
+    history: {
+      regex: /(zalozena?|kedy\s+vznikla|rok\s+vzniku|historia\s+firmy)/i,
+      handler: () => `Firma AI Power bola založená v roku ${window.aiPowerData.zalozena}.`
+    },
+    
+    management: {
+      regex: /(konatel|zakladatel|kto\s+(zalozil|ju\s+zalozil)|founder|riaditel)/i,
+      handler: () => {
+        if (normalizedMessage.includes('riaditel')) {
+          return `Výkonný riaditeľ: ${window.aiPowerData.vykonnyriaditel.join(", ")}.`;
+        }
+        return `Zakladateľ: ${window.aiPowerData.zakladatelia.join(", ")}.`;
+      }
+    },
+    
+    branches: {
+      regex: /(pobocka|najblizsia\s+pobocka|predajna)/i,
+      handler: () => {
+        const p = window.aiPowerData.pobočky
+          .map(x => `• ${x.mesto}: ${x.adresa}`)
+          .join("\n");
+        return `Naše pobočky:\n${p}`;
+      }
+    },
+    
+    hours: {
+      regex: /(pracovne\s+hodiny|otvorene|kedy\s+(mozem\s+prist|mate\s+otvorene)|otvaracie\s+hodiny)/i,
+      handler: () => {
+        const h = window.aiPowerData.pracovne_hodiny;
+        return ("Pracovné hodiny:\n" +
+          Object.entries(h)
+            .map(([den, cas]) => `${den.charAt(0).toUpperCase()+den.slice(1)}: ${cas}`)
+            .join("\n"))
+          .replace(/\n/g, "<br>");
+      }
+    },
+    
+    partners: {
+      regex: /(partner|spolupraca|s\s+kym\s+spolupracujete)/i,
+      handler: () => {
+        return window.aiPowerData.partnerstvá.length
+          ? (`Naši partneri:\n• ${window.aiPowerData.partnerstvá.join("\n• ")}`).replace(/\n/g, "<br>")
+          : "Momentálne nemáme officiálne partnerstvá.";
+      }
+    },
+    
+    description: {
+      regex: /(popis|co\s+robi|zaobera|funkcia|profil\s+firmy)/i,
+      handler: () => window.aiPowerData.popis
+    },
+    
+    philosophy: {
+      regex: /(filozofia|vizia|hodnoty|poslanie)/i,
+      handler: () => window.aiPowerData.filozofia
+    },
+    
+    sustainability: {
+      regex: /(udrzatelnost|ekologicke|zelene|csr)/i,
+      handler: () => {
+        const u = window.aiPowerData.udržateľnosť || window.aiPowerData.udrzatelnost;
+        return (`Opatrenia udržateľnosti:\n• ${u.opatrenia.join("\n• ")}`).replace(/\n/g, "<br>");
+      }
+    },
+    
+    employees: {
+      regex: /(pocet\s+zamestnancov|ko[l]?ko\s+(vas\s+je|zamestnancov|mate\s+zamestnancov))/i,
+      handler: () => `Momentálne máme ${window.aiPowerData.pocet_zamestnancov} zamestnancov.`
+    },
+    
+    booking: {
+      regex: /(stretnutie|meeting|rezervacia|calendly|zavolat\s+si|book|objednat|termin|zarezervovat)/i,
+      handler: () => {
+        const link = window.aiPowerData.booking.calendly;
+        return `Tu si môžeš rezervovať stretnutie: <a href="${link}" target="_blank">Rezervovať cez Calendly</a>`;
+      }
+    },
+    
+    research: {
+      regex: /(r&d|vyskum|vyvoj|r\s+and\s+d)/i,
+      handler: () => {
+        return window.aiPowerData.r_and_d
+          ? "Áno, venujeme sa aj výskumu a vývoju AI riešení."
+          : "Nie, momentálne nemáme vlastné R&D oddelenie.";
+      }
+    }
+  };
 
+  // Testovanie quick replies
+  let localReply = null;
+  for (const [category, config] of Object.entries(quickReplies)) {
+    if (config.regex.test(normalizedMessage)) {
+      localReply = config.handler();
+      
+      // Analytics tracking (ak implementované)
+      if (typeof trackQuickReply === 'function') {
+        trackQuickReply(category, message);
+      }
+      break;
+    }
+  }
   
-// --- LOKÁLNE ODPOVEDE Z database.js (maximálne pokrytie variantov) ---
+  if (localReply) {
+    removeLastBotMessage();
+    appendMessage("AI POWER", localReply, "bot");
+    chatHistory.push({ role: "assistant", content: localReply });
+    return;
+  }
 
-
-if (
-  lowerMessage.includes("cena") ||
-  lowerMessage.includes("koľko stojí") ||
-  lowerMessage.includes("kolko stoji") ||
-  lowerMessage.includes("koľko stoji") ||
-  lowerMessage.includes("kolko stojí") ||
-  lowerMessage.includes("aká je cena") ||
-  lowerMessage.includes("cenník") ||
-  lowerMessage.includes("cennik") ||
-  lowerMessage.includes("ceny") ||
-  lowerMessage.includes("sluzba") ||
-  lowerMessage.includes("sluzby") ||
-  lowerMessage.includes("ponuka sluzieb")
-) {
-  const sluzby = window.aiPowerData.sluzby
-    .map(s => `• ${s.nazov}: ${s.cena}`)
-    .join("\n");
-  localReply = `Naše služby a ich ceny:\n${sluzby}`.replace(/\n/g, "<br>");
-
-} else if (
-  lowerMessage.includes("kontakt") ||
-  lowerMessage.includes("telefón") ||
-  lowerMessage.includes("telefon") ||
-  lowerMessage.includes("tvoje číslo") ||
-  lowerMessage.includes("tvoj kontakt") ||
-  lowerMessage.includes("email") ||
-  lowerMessage.includes("e-mail") ||
-  lowerMessage.includes("mail") ||
-  lowerMessage.includes("gmail") ||
-  lowerMessage.includes("číselko")
-) {
-  const k = window.aiPowerData.kontakty;
-  localReply = `Kontakt na nás:\n📞 ${k.telefon}\n📧 ${k.email}\n🌐 ${k.web}`;
-
-} else if (
-  lowerMessage.includes("adresa") ||
-  lowerMessage.includes("kde ste") ||
-  lowerMessage.includes("sídli") ||
-  lowerMessage.includes("sidli") ||
-  lowerMessage.includes("kde sa nachádza") ||
-  lowerMessage.includes("kde vas najdem") ||
-  lowerMessage.includes("kde vas nájdem") ||
-  lowerMessage.includes("kde sa nachadza") ||
-  lowerMessage.includes("lokácia") ||
-  lowerMessage.includes("mapa")
-) {
-  localReply = `Naša hlavná adresa je:\n${window.aiPowerData.sidlo}`;
-
-} else if (
-  lowerMessage.includes("založená") ||
-  lowerMessage.includes("zalozena") ||
-  lowerMessage.includes("kedy vznikla") ||
-  lowerMessage.includes("rok vzniku") ||
-  lowerMessage.includes("história firmy") ||
-  lowerMessage.includes("historia firmy")
-) {
-  localReply = `Firma AI Power bola založená v roku ${window.aiPowerData.zalozena}.`;
-
-} else if (
-  lowerMessage.includes("konatel") ||
-  lowerMessage.includes("konateľ") ||
-  lowerMessage.includes("konatelia") ||
-  lowerMessage.includes("zakladateľ") ||
-  lowerMessage.includes("zakladatel") ||
-  lowerMessage.includes("kto založil") ||
-  lowerMessage.includes("kto zalozil") ||
-  lowerMessage.includes("kto ju zalozil") ||
-  lowerMessage.includes("founder")
-) {
-  localReply = `Zakladateľ: ${window.aiPowerData.zakladatelia.join(", ")}.`;
-
-} else if (
-  lowerMessage.includes("výkonny riaditel") ||
-  lowerMessage.includes("výkonny riaditeľ") ||
-  lowerMessage.includes("vykonny riaditel") ||
-  lowerMessage.includes("riaditel")
-) {
-  localReply = `Výkonný riaditeľ: ${window.aiPowerData.vykonnyriaditel.join(", ")}.`;  
-
-} else if (
-  lowerMessage.includes("pobočka") ||
-  lowerMessage.includes("pobocka") ||
-  lowerMessage.includes("najbližšia pobočka") ||
-  lowerMessage.includes("najblizsia pobocka") ||
-  lowerMessage.includes("predajna") ||
-  lowerMessage.includes("pobočky")
-) {
-  const p = window.aiPowerData.pobočky
-    .map(x => `• ${x.mesto}: ${x.adresa}`)
-    .join("\n");
-  localReply = `Naše pobočky:\n${p}`;
-
-} else if (
-  lowerMessage.includes("pracovné hodiny") ||
-  lowerMessage.includes("pracovne hodiny") ||
-  lowerMessage.includes("otvorené") ||
-  lowerMessage.includes("otvorene") ||
-  lowerMessage.includes("kedy môžem prísť") ||
-  lowerMessage.includes("kedy mozem prist") ||
-  lowerMessage.includes("otváracie hodiny") ||
-  lowerMessage.includes("otvaracie hodiny") ||
-  lowerMessage.includes("kedy mate otvorene") ||
-  lowerMessage.includes("kedy máte otvorené")
-) {
-  const h = window.aiPowerData.pracovne_hodiny;
-  localReply = ("Pracovné hodiny:\n" +
-    Object.entries(h)
-      .map(([den, cas]) => `${den.charAt(0).toUpperCase()+den.slice(1)}: ${cas}`)
-      .join("\n"))
-    .replace(/\n/g, "<br>");
-
-} else if (
-  lowerMessage.includes("partner") ||
-  lowerMessage.includes("spolupráca") ||
-  lowerMessage.includes("spolupraca") ||
-  lowerMessage.includes("partneri") ||
-  lowerMessage.includes("s kým spolupracujete")
-) {
-  localReply = window.aiPowerData.partnerstvá.length
-    ? (`Naši partneri:\n• ${window.aiPowerData.partnerstvá.join("\n• ")}`).replace(/\n/g, "<br>")
-    : "Momentálne nemáme oficiálne partnerstvá.";
-
-} else if (
-  lowerMessage.includes("popis") ||
-  lowerMessage.includes("čo robí") ||
-  lowerMessage.includes("co robi") ||
-  lowerMessage.includes("zaoberá") ||
-  lowerMessage.includes("zaobera") ||
-  lowerMessage.includes("funkcia") ||
-  lowerMessage.includes("profil firmy")
-) {
-  localReply = window.aiPowerData.popis;
-
-} else if (
-  lowerMessage.includes("filozofia") ||
-  lowerMessage.includes("vízia") ||
-  lowerMessage.includes("vizia") ||
-  lowerMessage.includes("hodnoty") ||
-  lowerMessage.includes("poslanie")
-) {
-  localReply = window.aiPowerData.filozofia;
-
-} else if (
-  lowerMessage.includes("udržateľnosť") ||
-  lowerMessage.includes("udrzatelnost") ||
-  lowerMessage.includes("ekologické") ||
-  lowerMessage.includes("ekologicke") ||
-  lowerMessage.includes("zelené") ||
-  lowerMessage.includes("zelene") ||
-  lowerMessage.includes("CSR")
-) {
-  const u = window.aiPowerData.udržateľnosť || window.aiPowerData.udrzatelnost;
-  localReply = (`Opatrenia udržateľnosti:\n• ${u.opatrenia.join("\n• ")}`)
-    .replace(/\n/g, "<br>");
-
-} else if (
-  lowerMessage.includes("počet zamestnancov") ||
-  lowerMessage.includes("pocet zamestnancov") ||
-  lowerMessage.includes("kolko zamestnancov") ||
-  lowerMessage.includes("koľko vás je") ||
-  lowerMessage.includes("kolko vas je") ||
-  lowerMessage.includes("kolko vás je") ||
-  lowerMessage.includes("koľko zamestnancov") ||
-  lowerMessage.includes("kolko zamestnancov") ||
-  lowerMessage.includes("kolko mate zamestnancov") ||
-  lowerMessage.includes("koľko mate zamestnancov")
-) {
-  localReply = `Momentálne máme ${window.aiPowerData.pocet_zamestnancov} zamestnancov.`;
-
-} else if (
-  lowerMessage.includes("stretnutie") ||
-  lowerMessage.includes("meeting") ||
-  lowerMessage.includes("rezervacia") ||
-  lowerMessage.includes("rezervácia") ||
-  lowerMessage.includes("calendly") ||
-  lowerMessage.includes("zavolat si") ||
-  lowerMessage.includes("book") ||
-  lowerMessage.includes("objednat") ||
-  lowerMessage.includes("termin") ||
-  lowerMessage.includes("termín") ||
-  lowerMessage.includes("zarezervovat") ||
-  lowerMessage.includes("booknut") ||
-  lowerMessage.includes("zavolat") ||
-  lowerMessage.includes("zavolať") ||
-  lowerMessage.includes("objednať")
-) {
-  const link = window.aiPowerData.booking.calendly;
-  localReply = `Tu si môžeš rezervovať stretnutie: <a href="${link}" target="_blank">Rezervovať cez Calendly</a>`;
-  
-} else if (
-  lowerMessage.includes("r&d") ||
-  lowerMessage.includes("výskum") ||
-  lowerMessage.includes("vyskum") ||
-  lowerMessage.includes("vývoj") ||
-  lowerMessage.includes("vyvoj") ||
-  lowerMessage.includes("r and d")
-) {
-  localReply = window.aiPowerData.r_and_d
-    ? "Áno, venujeme sa aj výskumu a vývoju AI riešení."
-    : "Nie, momentálne nemáme vlastné R&D oddelenie.";
-} 
-  
-if (localReply) {
-  removeLastBotMessage();
-  appendMessage("AI POWER", localReply, "bot");
-  chatHistory.push({ role: "assistant", content: localReply });
-  return;
-}
-// --- koniec lokálnych odpovedí ---
-
-
-
-
-
-
-
-  
   appendMessage("AI POWER", "Píšem odpoveď...", "bot", true);
 
   try {
@@ -776,7 +688,6 @@ if (localReply) {
 
     if (!response.ok) {
      throw new Error(`Chyba ${response.status}: ${response.statusText}`);
-
     }
 
     const data = await response.json();
@@ -786,13 +697,16 @@ if (localReply) {
     appendMessage("AI POWER", reply, "bot");
     chatHistory.push({ role: "assistant", content: reply });
 
-   
-
   } catch (error) {
     console.error("Chyba:", error);
     removeLastBotMessage();
-    appendMessage("AI POWER", `Ups, nastala chyba: ${error.message}`, "bot");
-
+    
+    // Fallback pre lokálne testovanie
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      appendMessage("AI POWER", "Ďakujem za vašu správu! Pre viac informácií ma kontaktujte na info@aipower.site alebo si rezervujte stretnutie cez našu stránku.", "bot");
+    } else {
+      appendMessage("AI POWER", `Ups, nastala chyba: ${error.message}`, "bot");
+    }
   }
 }
 
