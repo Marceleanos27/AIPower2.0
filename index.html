@@ -59,15 +59,29 @@ html {
   box-sizing: border-box;
 }
 
-/* Minimálne iframe pravidlá iba pre pozicovanie */
+/* Iframe štýl - skrytý režim s minimálnymi rozmermi */
 body.iframe-mode #chatbot-container {
-  position: absolute !important;
+  position: fixed !important;
+  top: 0px !important;
+  left: 0px !important;
+  width: 1px !important;
+  height: 1px !important;
+  opacity: 0 !important;
   border: none !important;
-  box-shadow: none !important;
+  z-index: -1 !important;
+  pointer-events: none !important;
 }
 
 body.iframe-mode #chatbot-container.closed {
-  position: absolute !important;
+  position: fixed !important;
+  top: 0px !important;
+  left: 0px !important;
+  width: 1px !important;
+  height: 1px !important;
+  opacity: 0 !important;
+  border: none !important;
+  z-index: -1 !important;
+  pointer-events: none !important;
 }
 
 #chatbot-container {
