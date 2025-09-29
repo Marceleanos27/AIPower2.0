@@ -73,6 +73,36 @@ body.iframe-mode html {
   height: 100% !important;
 }
 
+/* Iframe mód - reset všetkých border-radius */
+body.iframe-mode * {
+  border-radius: 0 !important;
+}
+
+/* Iframe mód - výnimky pre elementy ktoré majú zachovať tvar */
+body.iframe-mode #user-input {
+  border-radius: 22px !important;
+}
+
+body.iframe-mode button {
+  border-radius: 50% !important;
+}
+
+body.iframe-mode .message {
+  border-radius: 12px !important;
+}
+
+body.iframe-mode .message.user {
+  border-radius: 12px 12px 4px 12px !important;
+}
+
+body.iframe-mode .message.bot {
+  border-radius: 12px 12px 12px 4px !important;
+}
+
+body.iframe-mode img {
+  border-radius: 50% !important;
+}
+
 #chatbot-container {
   position: fixed;
   bottom: 24px;
@@ -107,7 +137,7 @@ body.iframe-mode #chatbot-container {
   width: 100% !important;
   height: 100% !important;
   border: none !important;
-  border-radius: inherit; /* Prevezme border-radius z iframe */
+  border-radius: 0 !important;
   max-height: none !important;
   overflow: hidden !important;
 }
@@ -138,7 +168,7 @@ body.iframe-mode #chatbot-container.closed {
   width: 100% !important;
   height: 100% !important;
   max-height: 100% !important;
-  border-radius: 50% !important;
+  border-radius: 0 !important;
   border: none !important;
   position: absolute !important;
   top: 0 !important;
@@ -156,6 +186,7 @@ body.iframe-mode #chatbot-body {
   gap: 16px !important;
   min-height: 0 !important;
   overflow: hidden !important;
+  border-radius: 0 !important;
 }
 
 /* Iframe mód - input area */
@@ -181,6 +212,7 @@ body.iframe-mode #chatbot-header {
   margin: 0 !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
   box-sizing: border-box !important;
+  border-radius: 0 !important;
 }
 
 /* Iframe mód - správne chovanie buttonov */
