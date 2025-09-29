@@ -59,20 +59,6 @@ html {
   box-sizing: border-box;
 }
 
-/* Speciálne pravidlá pre iframe režim */
-body.iframe-mode {
-  margin: 0 !important;
-  padding: 0 !important;
-  height: 100% !important;
-  overflow: hidden !important;
-}
-
-body.iframe-mode html {
-  margin: 0 !important;
-  padding: 0 !important;
-  height: 100% !important;
-}
-
 #chatbot-container {
   position: fixed;
   bottom: 24px;
@@ -97,20 +83,6 @@ body.iframe-mode html {
   font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* Keď je v iframe, vyplní celý priestor */
-body.iframe-mode #chatbot-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100% !important;
-  height: 100% !important;
-  border: none !important;
-  max-height: none !important;
-  overflow: hidden !important;
-}
-
 #chatbot-container.closed {
   width: 60px !important;
   height: 60px !important;
@@ -130,19 +102,6 @@ body.iframe-mode #chatbot-container {
   background: rgba(26, 26, 46, 0.95);
   border-radius: inherit;
   z-index: 1;
-}
-
-/* V iframe režime - zatvorený stav */
-body.iframe-mode #chatbot-container.closed {
-  width: 100% !important;
-  height: 100% !important;
-  max-height: 100% !important;
-  border: none !important;
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
 }
 
 #chatbot-container.closed #chatbot-header {
@@ -562,16 +521,6 @@ button:active {
     const chatbox = document.getElementById("chat-messages");
     const inputField = document.getElementById("user-input");
 
-    // Detekcia iframe a pridanie triedy
-    if (window.self !== window.top) {
-      document.body.classList.add('iframe-mode');
-    }
-
-    // Informuj parent, že je chatbot na začiatku zatvorený
-    if (window.parent !== window) {
-      window.parent.postMessage({ type: "chatbot-closed" }, "*");
-    }
-
     // Event listener pre Enter a Shift+Enter
     inputField.addEventListener('keydown', function(e) {
       if (e.key === 'Enter' && !e.shiftKey) {
@@ -594,19 +543,11 @@ button:active {
         openHeader.style.display = "none";
         closedHeader.style.display = "block";
         icon.innerText = "+";
-        // Informuj parent o zatvorení
-        if (window.parent !== window) {
-          window.parent.postMessage({ type: "chatbot-closed" }, "*");
-        }
       } else {
         // Otvorený stav
         openHeader.style.display = "flex";
         closedHeader.style.display = "none";
         icon.innerText = "−";
-        // Informuj parent o otvorení
-        if (window.parent !== window) {
-          window.parent.postMessage({ type: "chatbot-opened" }, "*");
-        }
       }
     }
 
