@@ -1066,8 +1066,14 @@ async function sendMessage() {
     const data = await response.json();
     let reply = data.choices?.[0]?.message?.content?.trim() || "Prepáč, neviem na to odpovedať.";
 
+    // Kontrola či odpoveď obsahuje "nemám presné informácie" alebo podobné frázy
+    const isInsufficientAnswer = reply.includes("nemám presné informácie") || 
+                                reply.includes("kontaktujte nás") ||
+                                reply.includes("neviem na to odpovedať") ||
+                                reply.includes("nemám dostatok informácií");
+
     removeLastBotMessage();
-    appendMessage("AI POWER", reply, "bot");
+    appendMessage("AI POWER", reply, "bot", false, false, isInsufficientAnswer);
     chatHistory.push({ role: "assistant", content: reply });
 
   } catch (error) {
