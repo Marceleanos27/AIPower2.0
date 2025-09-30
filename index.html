@@ -203,11 +203,11 @@ body.iframe-mode #chatbot-container.closed {
 }
 
 #chatbot-container:not(.closed) #toggle-icon {
-  transform: rotate(45deg);
+  transform: scaleX(-1);
 }
 
 #chatbot-container.closed #toggle-icon {
-  transform: rotate(0deg);
+  transform: scaleX(1);
 }
 
 #chatbot-container.closed #chatbot-body {
@@ -237,7 +237,7 @@ body.iframe-mode #chatbot-container.closed {
 
 #chat-messages {
   flex-grow: 1;
-  overflow-y: auto;
+  overflow-y: auto; 
   padding: 0;
   display: flex;
   flex-direction: column;
