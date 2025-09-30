@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>AI POWER</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script type="text/javascript">
+    (function(){
+      emailjs.init({
+        publicKey: "a6gl1J8IimvAROxcE", // Toto treba nahradiť skutočným public key
+      });
+    })();
+  </script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap');
 
@@ -402,12 +410,155 @@ button:active {
   background: rgba(0, 217, 255, 0.2);
 }
 
+/* Contact button - rovnaký štýl ako quick reply buttony */
+.contact-btn {
+  background: transparent;
+  color: #00D9FF;
+  border: 1px solid #00D9FF;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 0.85em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Montserrat', sans-serif;
+  white-space: nowrap;
+  flex-shrink: 0;
+  height: auto;
+  width: auto;
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 8px 0;
+}
+
+.contact-btn:hover {
+  background: rgba(0, 217, 255, 0.1);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 217, 255, 0.2);
+}
+
+.contact-btn:active {
+  transform: translateY(0);
+  background: rgba(0, 217, 255, 0.2);
+}
+
 /* Responzívne štýly pre Quick Reply buttony */
 @media (max-width: 480px) {
   .quick-reply-btn {
     font-size: 0.8em;
     padding: 6px 12px;
     min-height: 32px;
+  }
+}
+
+/* Kontaktný formulár */
+.contact-form {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 12px 0;
+  max-width: 100%;
+}
+
+.contact-form h4 {
+  margin: 0 0 12px 0;
+  color: #00D9FF;
+  font-size: 0.9em;
+  font-weight: 600;
+}
+
+.form-group {
+  margin-bottom: 12px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 4px;
+  color: #e2e8f0;
+  font-size: 0.8em;
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.85em;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+  resize: none;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #00D9FF;
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 0 2px rgba(0, 217, 255, 0.2);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.form-group textarea {
+  height: 60px;
+  min-height: 60px;
+  max-height: 120px;
+}
+
+.form-submit-btn {
+  background: linear-gradient(135deg, #00D9FF 0%, #7C3AED 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 0.85em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Montserrat', sans-serif;
+  width: 100%;
+  height: auto;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form-submit-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 217, 255, 0.3);
+}
+
+.form-submit-btn:active {
+  transform: translateY(0);
+}
+
+.form-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Responzívne štýly pre formulár */
+@media (max-width: 480px) {
+  .contact-form {
+    padding: 12px;
+  }
+  
+  .form-group input,
+  .form-group textarea {
+    font-size: 16px; /* Zabráni zoomovaniu na iOS */
   }
 }
 
@@ -690,6 +841,86 @@ button:active {
       }
     }
 
+    function createContactForm() {
+      const formId = 'contact-form-' + Date.now(); // Unikátne ID pre každý formulár
+      return `
+        <div class="contact-form">
+          <h4>Pošlite nám správu</h4>
+          <form id="${formId}" onsubmit="handleContactSubmit(event, '${formId}')">
+            <div class="form-group">
+              <label for="${formId}-name">Meno *</label>
+              <input type="text" id="${formId}-name" name="from_name" placeholder="Vaše meno" required>
+            </div>
+            <div class="form-group">
+              <label for="${formId}-email">Email *</label>
+              <input type="email" id="${formId}-email" name="from_email" placeholder="vas@email.com" required>
+            </div>
+            <div class="form-group">
+              <label for="${formId}-message">Správa *</label>
+              <textarea id="${formId}-message" name="message" placeholder="Opíšte vašu otázku alebo požiadavku..." required></textarea>
+            </div>
+            <button type="submit" class="form-submit-btn" id="${formId}-submit">
+              Odoslať správu
+            </button>
+          </form>
+        </div>
+      `;
+    }
+
+    function handleContactSubmit(event, formId) {
+      event.preventDefault();
+      
+      // Získanie tlačidla a formulára
+      const submitBtn = document.getElementById(formId + '-submit');
+      const form = document.getElementById(formId);
+      
+      // Disable tlačidlo a zmena textu
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = 'Odosielam...';
+      
+      // Odoslanie cez EmailJS
+      emailjs.sendForm('service_1mgr3un', 'template_pfpr23k', '#' + formId)
+        .then(
+          (response) => {
+            console.log('SUCCESS!', response.status, response.text);
+            
+            // Úspešná správa
+            appendMessage("AI POWER", "🎉 **Ďakujeme!** Vaša správa bola úspešne odoslaná. Odpovieme vám čo najskôr.", "bot");
+            
+            // Skryť formulár po úspešnom odoslaní
+            const formContainer = form.closest('.contact-form').parentElement;
+            if (formContainer) {
+              formContainer.style.display = 'none';
+            }
+          },
+          (error) => {
+            console.log('FAILED...', error);
+            
+            // Chybová správa
+            appendMessage("AI POWER", "❌ **Ups!** Nastala chyba pri odosielaní správy. Skúste to prosím znovu alebo nás kontaktujte priamo na info@aipower.site", "bot");
+            
+            // Obnoviť tlačidlo
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Odoslať správu';
+          }
+        );
+    }
+
+    function showContactForm(buttonElement) {
+      // Skry tlačidlo
+      buttonElement.style.display = 'none';
+      
+      // Vytvor a zobraz formulár
+      const contactFormDiv = document.createElement('div');
+      contactFormDiv.innerHTML = createContactForm();
+      
+      // Pridaj formulár za tlačidlo
+      buttonElement.parentNode.insertBefore(contactFormDiv, buttonElement.nextSibling);
+      
+      // Scroll na spodok
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+
     function handleQuickReply(question) {
       // Nastav otázku do input fieldu a odošli ju
       inputField.value = question;
@@ -845,7 +1076,7 @@ async function sendMessage() {
     
     // Fallback pre lokálne testovanie
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      appendMessage("AI POWER", "Ďakujem za vašu správu! Pre viac informácií ma kontaktujte na info@aipower.site alebo si rezervujte stretnutie cez našu stránku.", "bot");
+      appendMessage("AI POWER", "Na túto otázku neviem dostatočne odpovedať.", "bot", false, false, true);
     } else {
       appendMessage("AI POWER", `Ups, nastala chyba: ${error.message}`, "bot");
     }
@@ -857,7 +1088,7 @@ async function sendMessage() {
 
 
 
-    function appendMessage(sender, message, role, isTemp = false, showQuickReplies = false) {
+    function appendMessage(sender, message, role, isTemp = false, showQuickReplies = false, showContactButton = false) {
       const msgDiv = document.createElement("div");
       msgDiv.classList.add("message", role);
       if (isTemp) msgDiv.classList.add("temp");
@@ -879,6 +1110,17 @@ async function sendMessage() {
 
       msgDiv.innerHTML = formattedMessage;
       chatbox.appendChild(msgDiv);
+      
+      // Pridaj kontaktné tlačidlo ak je potrebné
+      if (role === 'bot' && showContactButton) {
+        const contactBtnDiv = document.createElement('div');
+        contactBtnDiv.innerHTML = `
+          <button class="contact-btn" onclick="showContactForm(this)">
+            Pošli nám správu
+          </button>
+        `;
+        chatbox.appendChild(contactBtnDiv);
+      }
       
       // Pridaj Quick Reply buttony pod správu (nie do nej)
       if (role === 'bot' && showQuickReplies) {
