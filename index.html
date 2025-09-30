@@ -88,7 +88,7 @@ body.iframe-mode html {
   transition: all 0.4s ease;
   z-index: 9999;
   box-sizing: border-box;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: none;
   font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
@@ -100,8 +100,9 @@ body.iframe-mode #chatbot-container {
   right: 0;
   bottom: 0;
   width: 100% !important;
-  height: 100% !important;
-  border-radius: inherit; /* Prevezme border-radius z iframe */
+  height: 600px !important;
+  border-radius: 0 !important;
+  border: none !important;
 }
 
 #chatbot-container.closed {
@@ -117,6 +118,7 @@ body.iframe-mode #chatbot-container.closed {
   height: 100% !important;
   max-height: 100% !important;
   border-radius: 50% !important;
+  border: none !important;
 }
 
 #chatbot-container.closed #chatbot-header {
@@ -182,7 +184,7 @@ body.iframe-mode #chatbot-container.closed {
   display: flex;
   flex-direction: column;
   background: #0f0f23;
-  height: calc(100% - 80px);
+  height: 100%;
   box-sizing: border-box;
   margin: 0;
   position: relative;
