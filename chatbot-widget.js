@@ -56,7 +56,7 @@
       // Desktop - presné rozmery ako má chatbot
       return {
         openWidth: "360px",
-        openHeight: "500px",
+        openHeight: "600px",
         closedWidth: "60px",
         closedHeight: "60px", 
         bottom: "20px",
@@ -119,3 +119,4 @@
   // Nastaví počiatočné responzívne veľkosti
   applyResponsiveSizes(false);
 })();
+
