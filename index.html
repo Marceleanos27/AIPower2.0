@@ -8,10 +8,8 @@
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script type="text/javascript">
     (function(){
-      const EMAILJS_PUBLIC_KEY = process.env.EMAILJS_PUBLIC_KEY;
-      
       emailjs.init({
-        publicKey: EMAILJS_PUBLIC_KEY,
+        publicKey: "a6gl1J8IimvAROxcE",
       });
     })();
   </script>
@@ -880,11 +878,8 @@ button:active {
       submitBtn.disabled = true;
       submitBtn.innerHTML = 'Odosielam...';
       
-      // Environment variables
-      const EMAILJS_SERVICE_ID = process.env.EMAILJS_SERVICE_ID;
-      const EMAILJS_TEMPLATE_ID = process.env.EMAILJS_TEMPLATE_ID;
-      
-      emailjs.sendForm(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, '#' + formId)
+      // EmailJS configuration
+      emailjs.sendForm('service_1mgr3un', 'template_pfpr23k', '#' + formId)
         .then(
           (response) => {
             console.log('SUCCESS!', response.status, response.text);
