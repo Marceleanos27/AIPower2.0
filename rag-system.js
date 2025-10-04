@@ -95,13 +95,14 @@ class RAGSystem {
   // Detekcia kategórie z dotazu
   getCategoryFromQuery(query) {
     const categoryKeywords = {
-      'pricing': ['cena', 'koľko', 'stojí', 'price', 'balík', 'mesačne'],
-      'benefits': ['výhody', 'prečo', 'dôvody', 'benefits', 'užitočný'],
-      'process': ['proces', 'ako', 'postup', 'kroky', 'implementácia'],
-      'technical': ['integrácia', 'technické', 'CRM', 'Google Sheets'],
-      'support': ['podpora', 'pomoc', 'údržba', 'problém'],
-      'customization': ['na mieru', 'prispôsobenie', 'vlastný', 'dizajn'],
-      'booking': ['rezervácia', 'stretnutie', 'konzultácia', 'Calendly']
+      'pricing': ['cena', 'kolko', 'stoji', 'price', 'balik', 'mesacne'],
+      'benefits': ['vyhody', 'preco', 'dovody', 'benefits', 'uzitocny'],
+      'process': ['proces', 'ako', 'postup', 'kroky', 'implementacia'],
+      'technical': ['integracia', 'technicke', 'crm', 'google sheets'],
+      'support': ['podpora', 'pomoc', 'udrzba', 'problem'],
+      'customization': ['na mieru', 'prisposobenie', 'vlastny', 'dizajn'],
+      'booking': ['rezervacia', 'stretnutie', 'konzultacia', 'calendly'],
+      'contact': ['adresa', 'lokacia', 'kde', 'kontakt', 'telefon', 'email', 'nachadza', 'sidli']
     };
 
     for (const [category, keywords] of Object.entries(categoryKeywords)) {
