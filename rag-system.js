@@ -122,7 +122,17 @@ class RAGSystem {
       .map(item => `**${item.title}:**\n${item.content}`)
       .join('\n\n');
     
-    return `PRESNÉ INFORMÁCIE O AI POWER (používaj LEN tieto fakty):\n\n${context}\n\nINŠTRUKCIE: Odpovedaj presne podľa týchto informácií. NEPRÍDÁVAJ žiadne vlastné detaily. DÔLEŽITÉ: Ak spomenieš Calendly link, VŽDY ho formátuj ako klikateľný hyperlink: <a href="https://calendly.com/aipoweragency/new-meeting?month=2025-08" target="_blank">Rezervovať konzultáciu</a>. PRESNÉ CENY: ROČNÉ €69/mesiac (ušetríte 20%) alebo MESAČNÉ €79/mesiac - NIKDY iné sumy!`;
+    // Kontrola či je relevant booking/consultation kontext
+    const isBookingRelated = relevantContent.some(item => 
+      item.category === 'booking' || 
+      item.keywords.some(kw => ['rezervácia', 'stretnutie', 'konzultácia', 'calendly', 'meeting'].includes(kw.toLowerCase()))
+    );
+    
+    const bookingInstruction = isBookingRelated 
+      ? ' DÔLEŽITÉ: Calendly link formátuj ako klikateľný hyperlink: <a href="https://calendly.com/aipoweragency/new-meeting?month=2025-08" target="_blank">Rezervovať konzultáciu</a>.'
+      : '';
+    
+    return `PRESNÉ INFORMÁCIE O AI POWER (používaj LEN tieto fakty):\n\n${context}\n\nINŠTRUKCIE: Odpovedaj presne podľa týchto informácií. NEPRÍDÁVAJ žiadne vlastné detaily.${bookingInstruction} PRESNÉ CENY: ROČNÉ €69/mesiac (ušetríte 20%) alebo MESAČNÉ €79/mesiac - NIKDY iné sumy!`;
   }
 
   // Získanie kontextu pre špecifickú kategóriu
