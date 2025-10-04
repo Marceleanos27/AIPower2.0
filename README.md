@@ -17,7 +17,7 @@ Kompletne refaktorovaná štruktúra zameraná na RAG:
 **Knowledge Base kategórie (19 záznamov):**
 - `benefits` - Výhody AI chatbotov (štatistiky 24+h, 100+ leadov, 1k+ konverzií)
 - `process` - Proces implementácie (3-5 dní, demo, meeting, integrácia)
-- `pricing` - Cenové informácie (€300 + €50/mes, prémiové funkcie €50)
+- `pricing` - Cenové informácie (€69/mes ročne s 20% zľavou alebo €79/mes mesačne)
 - `technical` - Technické integrácie (jednoduchý script, 5 min integrácia)
 - `support` - Podpora a údržba
 - `customization` - Možnosti prispôsobenia
