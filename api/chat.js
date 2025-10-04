@@ -42,16 +42,6 @@ export default async function handler(req, res) {
 
     const data = await response.json();
     
-    // Pridaj informáciu o použitých zdrojoch
-    if (useRAG && sources.length > 0) {
-      const originalContent = data.choices?.[0]?.message?.content || '';
-      const sourcesText = `\n\n📚 *Zdroje: ${sources.join(', ')}*`;
-      
-      if (data.choices && data.choices[0] && data.choices[0].message) {
-        data.choices[0].message.content = originalContent + sourcesText;
-      }
-    }
-    
     res.status(200).json(data);
   } catch (error) {
     console.error("API Error:", error);
