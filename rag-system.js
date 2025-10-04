@@ -122,7 +122,7 @@ class RAGSystem {
       .map(item => `**${item.title}:**\n${item.content}`)
       .join('\n\n');
     
-    return `PRESNÉ INFORMÁCIE O AI POWER (používaj LEN tieto fakty):\n\n${context}\n\nINŠTRUKCIE: Odpovedaj presne podľa týchto informácií. NEPRÍDÁVAJ žiadne vlastné detaily. DÔLEŽITÉ: Ak spomenieš Calendly link, VŽDY ho formátuj ako klikateľný hyperlink: <a href="https://calendly.com/aipoweragency/new-meeting?month=2025-08" target="_blank">Rezervovať konzultáciu</a>. PRESNÉ CENY: €300 + €50/mesiac, prémiové €50/funkcia - NIKDY iné sumy.`;
+    return `PRESNÉ INFORMÁCIE O AI POWER (používaj LEN tieto fakty):\n\n${context}\n\nINŠTRUKCIE: Odpovedaj presne podľa týchto informácií. NEPRÍDÁVAJ žiadne vlastné detaily. DÔLEŽITÉ: Ak spomenieš Calendly link, VŽDY ho formátuj ako klikateľný hyperlink: <a href="https://calendly.com/aipoweragency/new-meeting?month=2025-08" target="_blank">Rezervovať konzultáciu</a>. PRESNÉ CENY: ROČNÉ €69/mesiac (ušetríte 20%) alebo MESAČNÉ €79/mesiac - NIKDY iné sumy!`;
   }
 
   // Získanie kontextu pre špecifickú kategóriu
