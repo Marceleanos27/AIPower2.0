@@ -19,25 +19,24 @@ export default async function handler(req, res) {
       }
     }
 
-    const response = await fetch("https://api.together.xyz/v1/chat/completions", {
+    const response = await fetch("https://api.deepseek.com/chat/completions", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${API_KEY}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "Qwen/Qwen3-235B-A22B-Instruct-2507-tput",
+        model: "deepseek-chat",
         messages: enhancedMessages,
-        temperature: 0.4, // Vyvážená teplota pre prirodzenejšie odpovede
+        temperature: 0.4,
         max_tokens: 500,
-        top_p: 0.8,     // Obmedzenie variability
-        stop: null,
-        repetition_penalty: 1.1
+        stream: false
       })
     });
 
     if (!response.ok) {
-      throw new Error(`API responded with status ${response.status}`);
+      const errorText = await response.text();
+      throw new Error(`API responded with status ${response.status}: ${errorText}`);
     }
 
     const data = await response.json();
