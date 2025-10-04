@@ -94,6 +94,13 @@ window.aiPowerData = {
       keywords: ["kontakt", "+421 904 603 171", "info@aipower.site", "Bratislava", "24 hodín", "email", "telefón", "formulár"]
     },
     {
+      id: "location-address",
+      category: "contact",
+      title: "Adresa a lokácia",
+      content: "**Naša adresa:** Bratislava, Slovensko. Sme slovenská firma sídliaca v hlavnom meste. Pre presné stretnutia a online konzultácie nás kontaktujte na +421 904 603 171 alebo info@aipower.site.",
+      keywords: ["adresa", "lokácia", "kde", "kde sa nachádzate", "kde sídlite", "kde ste", "poloha", "mapa", "location", "Bratislava", "slovensko"]
+    },
+    {
       id: "services-overview",
       category: "services",
       title: "Naše služby - AI Chatbot na mieru",
