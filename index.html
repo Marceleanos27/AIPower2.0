@@ -751,14 +751,7 @@ button:active {
 
     <div id="chatbot-body">
       <div id="chat-messages">
-        <div class="message bot">Dobrý deň! Ako vám môžem pomôcť?👋</div>
-        <div class="quick-replies">
-          <button class="quick-reply-btn" onclick="handleQuickReply('Koľko to stojí?')">Ceny</button>
-          <button class="quick-reply-btn" onclick="handleQuickReply('Kontakt')">Kontakt</button>
-          <button class="quick-reply-btn" onclick="handleQuickReply('Pracovné hodiny')">Otváracie hodiny</button>
-          <button class="quick-reply-btn" onclick="handleQuickReply('Rezervácia stretnutia')">Stretnutie</button>
-          <button class="quick-reply-btn" onclick="handleQuickReply('Kde sa nachádzate?')">Adresa</button>
-        </div>
+        <!-- Úvodná správa bude pridaná cez JavaScript -->
       </div>
       <div id="input-area">
         <textarea id="user-input" placeholder="Napíšte správu..."></textarea>
@@ -788,6 +781,38 @@ button:active {
       if (window.aiPowerData && window.RAGSystem) {
         ragSystem = new window.RAGSystem(window.aiPowerData.knowledgeBase);
         console.log('RAG systém inicializovaný s', window.aiPowerData.knowledgeBase.length, 'záznamami');
+      }
+      
+      // Detekcia jazyka browsera a zobrazenie úvodnej správy
+      const browserLang = navigator.language || navigator.userLanguage;
+      const isEnglishBrowser = browserLang.startsWith('en');
+      
+      if (isEnglishBrowser) {
+        // Anglická úvodná správa
+        appendMessage("AI POWER", "Hello! How can I help you today? 👋", "bot", false, false, false);
+        const quickRepliesDiv = document.createElement('div');
+        quickRepliesDiv.className = 'quick-replies';
+        quickRepliesDiv.innerHTML = `
+          <button class="quick-reply-btn" onclick="handleQuickReply('How much does it cost?')">Pricing</button>
+          <button class="quick-reply-btn" onclick="handleQuickReply('Contact')">Contact</button>
+          <button class="quick-reply-btn" onclick="handleQuickReply('Working hours')">Opening Hours</button>
+          <button class="quick-reply-btn" onclick="handleQuickReply('Book a meeting')">Meeting</button>
+          <button class="quick-reply-btn" onclick="handleQuickReply('Where are you located?')">Address</button>
+        `;
+        chatbox.appendChild(quickRepliesDiv);
+      } else {
+        // Slovenská úvodná správa (predvolená)
+        appendMessage("AI POWER", "Dobrý deň! Ako vám môžem pomôcť? 👋", "bot", false, false, false);
+        const quickRepliesDiv = document.createElement('div');
+        quickRepliesDiv.className = 'quick-replies';
+        quickRepliesDiv.innerHTML = `
+          <button class="quick-reply-btn" onclick="handleQuickReply('Koľko to stojí?')">Ceny</button>
+          <button class="quick-reply-btn" onclick="handleQuickReply('Kontakt')">Kontakt</button>
+          <button class="quick-reply-btn" onclick="handleQuickReply('Pracovné hodiny')">Otváracie hodiny</button>
+          <button class="quick-reply-btn" onclick="handleQuickReply('Rezervácia stretnutia')">Stretnutie</button>
+          <button class="quick-reply-btn" onclick="handleQuickReply('Kde sa nachádzate?')">Adresa</button>
+        `;
+        chatbox.appendChild(quickRepliesDiv);
       }
     });
 
@@ -843,6 +868,34 @@ button:active {
 
     function createContactForm() {
       const formId = 'contact-form-' + Date.now(); // Unikátne ID pre každý formulár
+      const browserLang = navigator.language || navigator.userLanguage;
+      const isEnglishBrowser = browserLang.startsWith('en');
+      
+      if (isEnglishBrowser) {
+        return `
+          <div class="contact-form">
+            <h4>Send us a message</h4>
+            <form id="${formId}" onsubmit="handleContactSubmit(event, '${formId}')">
+              <div class="form-group">
+                <label for="${formId}-name">Name *</label>
+                <input type="text" id="${formId}-name" name="from_name" placeholder="Your name" required>
+              </div>
+              <div class="form-group">
+                <label for="${formId}-email">Email *</label>
+                <input type="email" id="${formId}-email" name="from_email" placeholder="your@email.com" required>
+              </div>
+              <div class="form-group">
+                <label for="${formId}-message">Message *</label>
+                <textarea id="${formId}-message" name="message" placeholder="Describe your question or request..." required></textarea>
+              </div>
+              <button type="submit" class="form-submit-btn" id="${formId}-submit">
+                Send message
+              </button>
+            </form>
+          </div>
+        `;
+      }
+      
       return `
         <div class="contact-form">
           <h4>Pošlite nám správu</h4>
@@ -874,9 +927,13 @@ button:active {
       const submitBtn = document.getElementById(formId + '-submit');
       const form = document.getElementById(formId);
       
+      // Detekcia jazyka
+      const browserLang = navigator.language || navigator.userLanguage;
+      const isEnglishBrowser = browserLang.startsWith('en');
+      
       // Disable tlačidlo a zmena textu
       submitBtn.disabled = true;
-      submitBtn.innerHTML = 'Odosielam...';
+      submitBtn.innerHTML = isEnglishBrowser ? 'Sending...' : 'Odosielam...';
       
       // EmailJS configuration
       emailjs.sendForm('service_1mgr3un', 'template_pfpr23k', '#' + formId)
@@ -885,7 +942,10 @@ button:active {
             console.log('SUCCESS!', response.status, response.text);
             
             // Úspešná správa
-            appendMessage("AI POWER", "🎉 **Ďakujeme!** Vaša správa bola úspešne odoslaná. Odpovieme vám čo najskôr.", "bot");
+            const successMsg = isEnglishBrowser 
+              ? "🎉 **Thank you!** Your message has been sent successfully. We'll respond as soon as possible."
+              : "🎉 **Ďakujeme!** Vaša správa bola úspešne odoslaná. Odpovieme vám čo najskôr.";
+            appendMessage("AI POWER", successMsg, "bot");
             
             // Skryť formulár po úspešnom odoslaní
             const formContainer = form.closest('.contact-form').parentElement;
@@ -897,11 +957,14 @@ button:active {
             console.log('FAILED...', error);
             
             // Chybová správa
-            appendMessage("AI POWER", "❌ **Ups!** Nastala chyba pri odosielaní správy. Skúste to prosím znovu alebo nás kontaktujte priamo na info@aipower.site", "bot");
+            const errorMsg = isEnglishBrowser
+              ? "❌ **Oops!** An error occurred while sending the message. Please try again or contact us directly at info@aipower.site"
+              : "❌ **Ups!** Nastala chyba pri odosielaní správy. Skúste to prosím znovu alebo nás kontaktujte priamo na info@aipower.site";
+            appendMessage("AI POWER", errorMsg, "bot");
             
             // Obnoviť tlačidlo
             submitBtn.disabled = false;
-            submitBtn.innerHTML = 'Odoslať správu';
+            submitBtn.innerHTML = isEnglishBrowser ? 'Send message' : 'Odoslať správu';
           }
         );
     }
@@ -942,32 +1005,48 @@ async function sendMessage() {
 
   chatHistory.push({ role: "user", content: message });
 
+  // Detekcia jazyka - kontrola anglických slov
+  const englishPatterns = /\b(hello|hi|hey|price|cost|how much|what|when|where|contact|help|support|service|chatbot|meeting|booking|available|information|details|can you|could you|i need|i want|thank you|thanks)\b/i;
+  const isEnglish = englishPatterns.test(message);
+  const detectedLanguage = isEnglish ? 'en' : 'sk';
+
   // Normalizácia textu - odstránenie diakritiky a lowercase
   const normalizedMessage = message
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, ''); // odstráni diakritiku
 
-  // Optimalizované quick replies s RegEx
+  // Optimalizované quick replies s RegEx (slovenčina + angličtina)
   const quickReplies = {
     pricing: {
-      regex: /(cena|ko[l]?ko\s+stoj[ií]|cenn[ií]k|ceny|sluzb[ya]?|ponuka\s+sluzieb)/i,
+      regex: /(cena|ko[l]?ko\s+stoj[ií]|cenn[ií]k|ceny|sluzb[ya]?|ponuka\s+sluzieb|price|pricing|cost|how much)/i,
       handler: () => {
-        return `💰 **PRESNÉ CENY:**<br><br>• **Základný balík:** 300€ jednorazovo + 50€/mesiac<br>• **Prémiové funkcie:** 50€/funkcia jednorazovo<br><br>Základný balík: chatbot na webe, FAQ, 24/7 dostupnosť, zber kontaktov, údržba.<br><br>📅 <a href="${window.aiPowerData.company.calendly}" target="_blank">🔗 REZERVOVAŤ KONZULTÁCIU</a>`;
+        if (detectedLanguage === 'en') {
+          return `💰 **EXACT PRICING:**<br><br>• **YEARLY subscription** (save 20%): €69/month without VAT (€82.80 with VAT)<br>   Billed annually €828 / €993.60 with VAT. **Save €120/year!**<br><br>• **MONTHLY subscription**: €79/month without VAT (€94.80 with VAT)<br><br>**No hidden fees!** Includes: Custom chatbot, 24/7 availability, trained AI, 100% Slovak language, lead collection, unlimited conversations, email support.<br><br>📅 <a href="${window.aiPowerData.company.calendly}" target="_blank">🔗 BOOK FREE CONSULTATION</a>`;
+        }
+        return `💰 **PRESNÉ CENY:**<br><br>• **ROČNÉ predplatné** (ušetríte 20%): €69/mesiac bez DPH (€82.80 s DPH)<br>   Fakturované ročne €828 / €993.60 s DPH. **Ušetríte €120 ročne!**<br><br>• **MESAČNÉ predplatné**: €79/mesiac bez DPH (€94.80 s DPH)<br><br>**Žiadne skryté poplatky!** Zahŕňa: Chatbot na mieru, 24/7 dostupnosť, natrénovaný AI, 100% slovenčina, zber leadov, neobmedzené konverzácie, email podpora.<br><br>📅 <a href="${window.aiPowerData.company.calendly}" target="_blank">🔗 REZERVOVAŤ KONZULTÁCIU</a>`;
       }
     },
     
     contact: {
-      regex: /(kontakt|telefon|tvoj[ea]?\s+(cislo|kontakt)|e?-?mail|gmail|ciselko)/i,
+      regex: /(kontakt|telefon|tvoj[ea]?\s+(cislo|kontakt)|e?-?mail|gmail|ciselko|contact|phone|email|reach)/i,
       handler: () => {
         const c = window.aiPowerData.company;
-        return `📞 **Kontakt na nás:**<br><br>📞 ${c.phone}<br>📧 ${c.email}<br>🌐 ${c.website}`;
+        if (detectedLanguage === 'en') {
+          return `📞 **Contact Us:**<br><br>📞 ${c.phone}<br>📧 ${c.email}<br>🌐 ${c.website}<br><br>We'll respond within 24 hours!`;
+        }
+        return `📞 **Kontakt na nás:**<br><br>📞 ${c.phone}<br>📧 ${c.email}<br>🌐 ${c.website}<br><br>Odpovieme do 24 hodín!`;
       }
     },
     
     address: {
-      regex: /(adresa|kde\s+(ste|sa\s+(nachadza|nachadzate))|sidli|lokacia|mapa|kde\s+vas\s+(najdem|najdeme))/i,
-      handler: () => `📍 **Naša lokácia:**<br><br>${window.aiPowerData.company.location}`
+      regex: /(adresa|kde\s+(ste|sa\s+(nachadza|nachadzate))|sidli|lokacia|mapa|kde\s+vas\s+(najdem|najdeme)|address|location|where are you)/i,
+      handler: () => {
+        if (detectedLanguage === 'en') {
+          return `📍 **Our Location:**<br><br>${window.aiPowerData.company.location}`;
+        }
+        return `📍 **Naša lokácia:**<br><br>${window.aiPowerData.company.location}`;
+      }
     },
     
     history: {
@@ -994,9 +1073,12 @@ async function sendMessage() {
 
     
     booking: {
-      regex: /(stretnutie|meeting|rezervacia|calendly|zavolat\s+si|book|objednat|termin|zarezervovat)/i,
+      regex: /(stretnutie|meeting|rezervacia|calendly|zavolat\s+si|book|objednat|termin|zarezervovat|consultation|appointment|schedule)/i,
       handler: () => {
         const link = window.aiPowerData.company.calendly;
+        if (detectedLanguage === 'en') {
+          return `📅 **Book a Meeting:**<br><br><a href="${link}" target="_blank">🔗 BOOK FREE CONSULTATION</a><br><br>Click the link above for direct booking. 30-minute online call.`;
+        }
         return `📅 **Rezervácia stretnutia:**<br><br><a href="${link}" target="_blank">🔗 REZERVOVAŤ BEZPLATNÚ KONZULTÁCIU</a><br><br>Kliknite na odkaz vyššie pre priamu rezerváciu. 30-minútový online hovor.`;
       }
     },
@@ -1024,7 +1106,8 @@ async function sendMessage() {
     return;
   }
 
-  appendMessage("AI POWER", "Hľadám relevantné informácie...", "bot", true);
+  const loadingMsg = detectedLanguage === 'en' ? "Searching for relevant information..." : "Hľadám relevantné informácie...";
+  appendMessage("AI POWER", loadingMsg, "bot", true);
 
   try {
     await delay(800);
@@ -1045,7 +1128,7 @@ async function sendMessage() {
       }
     }
 
-    // API volanie s RAG kontextom
+    // API volanie s RAG kontextom a detegovaným jazykom
     const response = await fetch("/api/chat", {
       method: "POST",
       headers: {
@@ -1055,22 +1138,28 @@ async function sendMessage() {
         messages: chatHistory,
         useRAG: useRAG,
         ragContext: ragContext,
-        sources: sources
+        sources: sources,
+        language: detectedLanguage
       })
     });
 
     if (!response.ok) {
-     throw new Error(`Chyba ${response.status}: ${response.statusText}`);
+     const errorMsg = detectedLanguage === 'en' ? `Error ${response.status}: ${response.statusText}` : `Chyba ${response.status}: ${response.statusText}`;
+     throw new Error(errorMsg);
     }
 
     const data = await response.json();
-    let reply = data.choices?.[0]?.message?.content?.trim() || "Prepáč, neviem na to odpovedať.";
+    const defaultReply = detectedLanguage === 'en' ? "Sorry, I don't have enough information to answer that." : "Prepáč, neviem na to odpovedať.";
+    let reply = data.choices?.[0]?.message?.content?.trim() || defaultReply;
 
-    // Kontrola či odpoveď obsahuje "nemám presné informácie" alebo podobné frázy
+    // Kontrola či odpoveď obsahuje "nemám presné informácie" alebo podobné frázy (slovenčina aj angličtina)
     const isInsufficientAnswer = reply.includes("nemám presné informácie") || 
                                 reply.includes("kontaktujte nás") ||
                                 reply.includes("neviem na to odpovedať") ||
-                                reply.includes("nemám dostatok informácií");
+                                reply.includes("nemám dostatok informácií") ||
+                                reply.includes("don't have enough information") ||
+                                reply.includes("contact us") ||
+                                reply.includes("I don't know");
 
     removeLastBotMessage();
     appendMessage("AI POWER", reply, "bot", false, false, isInsufficientAnswer);
@@ -1082,9 +1171,11 @@ async function sendMessage() {
     
     // Fallback pre lokálne testovanie
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      appendMessage("AI POWER", "Na túto otázku neviem dostatočne odpovedať.", "bot", false, false, true);
+      const fallbackMsg = detectedLanguage === 'en' ? "I don't have enough information to answer this question properly." : "Na túto otázku neviem dostatočne odpovedať.";
+      appendMessage("AI POWER", fallbackMsg, "bot", false, false, true);
     } else {
-      appendMessage("AI POWER", `Ups, nastala chyba: ${error.message}`, "bot");
+      const errorPrefix = detectedLanguage === 'en' ? "Oops, an error occurred:" : "Ups, nastala chyba:";
+      appendMessage("AI POWER", `${errorPrefix} ${error.message}`, "bot");
     }
   }
 }
@@ -1119,10 +1210,14 @@ async function sendMessage() {
       
       // Pridaj kontaktné tlačidlo ak je potrebné
       if (role === 'bot' && showContactButton) {
+        const browserLang = navigator.language || navigator.userLanguage;
+        const isEnglishBrowser = browserLang.startsWith('en');
+        const buttonText = isEnglishBrowser ? "Send us a message" : "Pošli nám správu";
+        
         const contactBtnDiv = document.createElement('div');
         contactBtnDiv.innerHTML = `
           <button class="contact-btn" onclick="showContactForm(this)">
-            Pošli nám správu
+            ${buttonText}
           </button>
         `;
         chatbox.appendChild(contactBtnDiv);
