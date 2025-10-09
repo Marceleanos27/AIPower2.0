@@ -71,6 +71,7 @@
     const sizes = getResponsiveSizes();
     
     if (isOpen) {
+      iframe.style.transition = "all 0.4s ease";
       iframe.style.width = sizes.openWidth;
       iframe.style.height = sizes.openHeight;
       iframe.style.borderRadius = "20px";
@@ -84,6 +85,13 @@
         iframe.style.left = "auto";
         iframe.style.right = sizes.right;
       }
+      
+      // Pošle resize správu do iframe po animácii, aby sa layout správne prepočítal
+      setTimeout(() => {
+        if (iframe.contentWindow) {
+          iframe.contentWindow.postMessage({ type: "resize" }, "https://ai-power2-0.vercel.app");
+        }
+      }, 500);
     } else {
       iframe.style.width = sizes.closedWidth;
       iframe.style.height = sizes.closedHeight;
@@ -119,4 +127,3 @@
   // Nastaví počiatočné responzívne veľkosti
   applyResponsiveSizes(false);
 })();
-
