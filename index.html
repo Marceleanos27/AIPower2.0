@@ -49,21 +49,23 @@
   }
 }
 
+/* Základné nastavenie pre iframe kompatibilitu */
+html {
+  height: 100%;
+  width: 100%;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
 body {
   margin: 0 !important;
   padding: 0 !important;
   font-family: 'Montserrat', sans-serif;
   width: 100%;
-  height: 100vh;
-  overflow: hidden;
-  box-sizing: border-box;
-}
-
-html {
-  width: 100%;
   height: 100%;
-  margin: 0 !important;
-  padding: 0 !important;
+  overflow: hidden;
   box-sizing: border-box;
 }
 
@@ -86,7 +88,8 @@ body.iframe-mode html {
   bottom: 20px;
   right: 20px;
   width: 360px;
-  height: 600px;
+  height: 100%;
+  max-height: 600px;
   background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
   border-radius: 20px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
@@ -112,7 +115,8 @@ body.iframe-mode #chatbot-container {
   right: 0;
   bottom: 0;
   width: 100% !important;
-  height: 600px !important;
+  height: 100% !important;
+  max-height: 100% !important;
   border-radius: 0 !important;
   border: none !important;
 }
@@ -809,6 +813,14 @@ button:active {
     if (window.parent !== window) {
       window.parent.postMessage({ type: "chatbot-closed" }, "*");
     }
+
+    // Listener pre resize správy z widgetu
+    window.addEventListener("message", function(event) {
+      if (event.data.type === "resize") {
+        // Donúti prehliadač prepočítať layout
+        window.dispatchEvent(new Event("resize"));
+      }
+    });
 
     // Event listener pre Enter a Shift+Enter
     inputField.addEventListener('keydown', function(e) {
