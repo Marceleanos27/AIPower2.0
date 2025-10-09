@@ -23,6 +23,13 @@
   iframe.style.transition = "all 0.4s ease";
   iframe.style.overflow = "hidden";
   
+  // Kritické nastavenia pre konzistentný rendering
+  iframe.setAttribute("frameborder", "0");
+  iframe.setAttribute("scrolling", "no");
+  iframe.style.margin = "0";
+  iframe.style.padding = "0";
+  iframe.style.display = "block";
+  
   document.body.appendChild(iframe);
 
   // Responsive breakpoints
