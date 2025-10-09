@@ -2,7 +2,7 @@
 <html lang="sk">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>AI POWER</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
@@ -15,6 +15,14 @@
   </script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap');
+
+/* CSS Reset pre iframe konzistenciu */
+* {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  box-sizing: border-box;
+}
 
 :root {
   --gradient-primary: linear-gradient(135deg, #00D9FF 0%, #7C3AED 100%);
@@ -67,19 +75,27 @@ body {
   height: 100%;
   overflow: hidden;
   box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 /* Speciálne pravidlá pre iframe režim */
 body.iframe-mode {
   margin: 0 !important;
   padding: 0 !important;
+  width: 100% !important;
   height: 100% !important;
   overflow: hidden !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
 }
 
 body.iframe-mode html {
   margin: 0 !important;
   padding: 0 !important;
+  width: 100% !important;
   height: 100% !important;
 }
 
@@ -135,11 +151,20 @@ body.iframe-mode #chatbot-container {
 
 /* V iframe režime - zatvorený stav vyplní celý kruhový iframe */
 body.iframe-mode #chatbot-container.closed {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
   width: 100% !important;
   height: 100% !important;
   max-height: 100% !important;
   border-radius: 50% !important;
   border: none !important;
+  margin: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 #chatbot-container.closed #chatbot-header {
@@ -164,6 +189,14 @@ body.iframe-mode #chatbot-container.closed {
   transform: scale(1);
   transition: opacity 0.4s cubic-bezier(0.23, 1, 0.32, 1),
               transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  margin: 0 !important;
+}
+
+/* V iframe režime - header v zatvorenom stave */
+body.iframe-mode #chatbot-container.closed #chatbot-header-closed {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 50% !important;
 }
 
 #chatbot-container.closed #chatbot-header-closed:hover {
@@ -587,12 +620,16 @@ button:active {
   
   /* V iframe režime */
   body.iframe-mode #chatbot-container {
+    position: absolute !important;
     left: 0 !important;
     right: 0 !important;
     bottom: 0 !important;
     top: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
     max-width: 100% !important;
     max-height: 100% !important;
+    margin: 0 !important;
   }
   
   body.iframe-mode #chatbot-container.closed {
@@ -608,14 +645,18 @@ button:active {
   
   #chatbot-body {
     padding: 12px;
-    height: calc(70vh - 80px);
+    height: auto;
+    flex: 1;
+    min-height: 0;
   }
   
   body.iframe-mode #chatbot-body {
-    height: 100%;
-    padding: 16px 16px 16px 16px;
+    height: auto;
+    flex: 1;
+    padding: 16px;
     box-sizing: border-box;
     margin: 0;
+    min-height: 0;
   }
   
   #user-input {
