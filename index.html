@@ -231,6 +231,70 @@ body.iframe-mode #chatbot-container.closed #chatbot-header-closed {
   transform: translateY(0);
   transition: opacity 0.4s cubic-bezier(0.23, 1, 0.32, 1),
               transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  flex-shrink: 0;
+  min-height: 77px;
+  max-height: 77px;
+  height: 77px;
+  box-sizing: border-box;
+  line-height: 1;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  line-height: 1;
+}
+
+.avatar-wrapper {
+  position: relative;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+}
+
+.avatar-wrapper img {
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+.status-indicator {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 12px;
+  height: 12px;
+  background: #10b981;
+  border-radius: 50%;
+  border: 2px solid #1a1a2e;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1;
+}
+
+.user-name {
+  font-weight: 600;
+  font-size: 16px;
+  color: #ffffff;
+  line-height: 1;
+  margin: 0;
+  padding: 0;
+}
+
+.user-status {
+  font-size: 12px;
+  color: #10b981;
+  font-weight: 500;
+  line-height: 1;
+  margin: 0;
+  padding: 0;
 }
 
 #chatbot-container.closed #chatbot-header {
@@ -240,11 +304,19 @@ body.iframe-mode #chatbot-container.closed #chatbot-header-closed {
 }
 
 #toggle-icon {
-  font-size: 1.5em;
+  font-size: 20px;
+  font-weight: 300;
   transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1),
               opacity 0.3s ease;
   transform-origin: center;
   will-change: transform;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
 }
 
 #chatbot-container:not(.closed) #toggle-icon {
@@ -264,7 +336,7 @@ body.iframe-mode #chatbot-container.closed #chatbot-header-closed {
   display: flex;
   flex-direction: column;
   background: #0f0f23;
-  flex: 1;
+  flex: 1 1 auto;
   box-sizing: border-box;
   margin: 0;
   position: relative;
@@ -273,6 +345,7 @@ body.iframe-mode #chatbot-container.closed #chatbot-header-closed {
   transition: opacity 0.4s cubic-bezier(0.23, 1, 0.32, 1),
               transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
   min-height: 0;
+  max-height: calc(100% - 77px);
   overflow: hidden;
 }
 
@@ -641,6 +714,27 @@ button:active {
   #chatbot-header {
     padding: 8px 16px;
     font-size: 0.95em;
+    min-height: 65px;
+    max-height: 65px;
+    height: 65px;
+  }
+  
+  .avatar-wrapper {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .avatar-wrapper img {
+    height: 36px;
+    width: 36px;
+  }
+  
+  .user-name {
+    font-size: 15px;
+  }
+  
+  .user-status {
+    font-size: 11px;
   }
   
   #chatbot-body {
@@ -705,19 +799,47 @@ button:active {
   #chatbot-header {
     padding: 6px 12px;
     font-size: 0.9em;
+    min-height: 56px;
+    max-height: 56px;
+    height: 56px;
   }
   
-  #chatbot-header img {
-    height: 32px !important;
+  .avatar-wrapper {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .avatar-wrapper img {
+    height: 32px;
+    width: 32px;
+  }
+  
+  .user-name {
+    font-size: 14px;
+  }
+  
+  .user-status {
+    font-size: 10px;
+  }
+  
+  #toggle-icon {
+    font-size: 18px;
+    width: 20px;
+    height: 20px;
   }
   
   #chatbot-body {
     padding: 10px;
-    height: calc(75vh - 75px);
+    height: auto;
+    flex: 1;
+    min-height: 0;
+    max-height: calc(100% - 56px);
   }
   
   body.iframe-mode #chatbot-body {
-    height: 100%;
+    height: auto;
+    flex: 1;
+    min-height: 0;
   }
   
   #user-input {
@@ -775,18 +897,18 @@ button:active {
   <div id="chatbot-container" class="closed">
     <div id="chatbot-header" onclick="toggleChatbot()">
       <!-- Kompletný režim (otvorený) -->
-      <div class="user-info" style="display: flex; align-items: center; gap: 12px;">
-        <div style="position: relative;">
-          <img src="logo_aiPower-03-03.png" alt="AI Asistent" style="height:40px; width:40px; border-radius:50%; object-fit:cover;">
-          <div style="position: absolute; bottom: 2px; right: 2px; width: 12px; height: 12px; background: #10b981; border-radius: 50%; border: 2px solid #1a1a2e;"></div>
+      <div class="user-info">
+        <div class="avatar-wrapper">
+          <img src="logo_aiPower-03-03.png" alt="AI Asistent">
+          <div class="status-indicator"></div>
         </div>
-        <div>
-          <div style="font-weight: 600; font-size: 16px; color: #ffffff; margin-bottom: 2px;">AI Asistent</div>
-          <div style="font-size: 12px; color: #10b981; font-weight: 500;">Online</div>
+        <div class="user-details">
+          <div class="user-name">AI Asistent</div>
+          <div class="user-status">Online</div>
         </div>
       </div>
       
-      <span id="toggle-icon" style="font-size: 20px; font-weight: 300;">+</span>
+      <span id="toggle-icon">+</span>
     </div>
 
     <!-- Header pre zatvorený stav -->
